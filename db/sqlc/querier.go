@@ -11,8 +11,8 @@ import (
 type Querier interface {
 	DeleteOnboarding(ctx context.Context, id int32) error
 	GetOnboarding(ctx context.Context, id int32) (Onboarding, error)
-	InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) error
-	UpdateOnboarding(ctx context.Context, arg UpdateOnboardingParams) error
+	InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) (Onboarding, error)
+	UpdateOnboarding(ctx context.Context, arg UpdateOnboardingParams) (Onboarding, error)
 }
 
 var _ Querier = (*Queries)(nil)

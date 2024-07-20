@@ -39,7 +39,7 @@ func (q *Queries) GetOnboarding(ctx context.Context, id int32) (Onboarding, erro
 	return i, err
 }
 
-const insertOnboarding = `-- name: InsertOnboarding :exec
+const insertOnboarding = `-- name: InsertOnboarding :one
 INSERT INTO "onboarding" ("image", "title", "description") 
 VALUES ($1, $2, $3) 
 RETURNING id, image, title, description
@@ -51,15 +51,23 @@ type InsertOnboardingParams struct {
 	Description string      `json:"description"`
 }
 
-func (q *Queries) InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) error {
-	_, err := q.db.Exec(ctx, insertOnboarding, arg.Image, arg.Title, arg.Description)
-	return err
+func (q *Queries) InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) (Onboarding, error) {
+	row := q.db.QueryRow(ctx, insertOnboarding, arg.Image, arg.Title, arg.Description)
+	var i Onboarding
+	err := row.Scan(
+		&i.ID,
+		&i.Image,
+		&i.Title,
+		&i.Description,
+	)
+	return i, err
 }
 
-const updateOnboarding = `-- name: UpdateOnboarding :exec
+const updateOnboarding = `-- name: UpdateOnboarding :one
 UPDATE "onboarding" 
 SET "image" = $1, "title" = $2, "description" = $3
 WHERE "id" = $4
+RETURNING id, image, title, description
 `
 
 type UpdateOnboardingParams struct {
@@ -69,12 +77,19 @@ type UpdateOnboardingParams struct {
 	ID          int32       `json:"id"`
 }
 
-func (q *Queries) UpdateOnboarding(ctx context.Context, arg UpdateOnboardingParams) error {
-	_, err := q.db.Exec(ctx, updateOnboarding,
+func (q *Queries) UpdateOnboarding(ctx context.Context, arg UpdateOnboardingParams) (Onboarding, error) {
+	row := q.db.QueryRow(ctx, updateOnboarding,
 		arg.Image,
 		arg.Title,
 		arg.Description,
 		arg.ID,
 	)
-	return err
+	var i Onboarding
+	err := row.Scan(
+		&i.ID,
+		&i.Image,
+		&i.Title,
+		&i.Description,
+	)
+	return i, err
 }
