@@ -9,12 +9,16 @@ import (
 )
 
 type Querier interface {
+	DeleteCategory(ctx context.Context, id int32) error
 	DeleteOnboarding(ctx context.Context, id int32) error
 	DeleteUser(ctx context.Context, id int32) error
+	GetCategory(ctx context.Context, id int32) (Category, error)
 	GetOnboarding(ctx context.Context, id int32) (Onboarding, error)
 	GetUser(ctx context.Context, id int32) (User, error)
+	InsertCategory(ctx context.Context, name string) (Category, error)
 	InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) (Onboarding, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
+	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateOnboarding(ctx context.Context, arg UpdateOnboardingParams) (Onboarding, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
