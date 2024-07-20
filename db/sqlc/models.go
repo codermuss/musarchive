@@ -12,15 +12,15 @@ import (
 )
 
 type Blog struct {
-	ID         int32            `json:"id"`
-	UserID     pgtype.Int4      `json:"user_id"`
-	Title      string           `json:"title"`
-	Summary    string           `json:"summary"`
-	Content    string           `json:"content"`
-	CoverImage pgtype.Text      `json:"cover_image"`
-	CreatedAt  pgtype.Timestamp `json:"created_at"`
-	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
-	Likes      pgtype.Int4      `json:"likes"`
+	ID         int32              `json:"id"`
+	UserID     pgtype.Int4        `json:"user_id"`
+	Title      string             `json:"title"`
+	Summary    string             `json:"summary"`
+	Content    string             `json:"content"`
+	CoverImage pgtype.Text        `json:"cover_image"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
+	Likes      pgtype.Int4        `json:"likes"`
 }
 
 type BlogCategory struct {
@@ -44,11 +44,11 @@ type Category struct {
 }
 
 type Comment struct {
-	ID        int32            `json:"id"`
-	BlogID    int32            `json:"blog_id"`
-	UserID    int32            `json:"user_id"`
-	Content   string           `json:"content"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
+	ID        int32              `json:"id"`
+	BlogID    int32              `json:"blog_id"`
+	UserID    int32              `json:"user_id"`
+	Content   string             `json:"content"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
 type FeaturedStory struct {

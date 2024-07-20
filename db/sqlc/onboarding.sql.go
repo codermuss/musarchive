@@ -12,8 +12,8 @@ import (
 )
 
 const deleteOnboarding = `-- name: DeleteOnboarding :exec
-DELETE FROM "onboarding" 
-WHERE "id" = $1
+DELETE FROM onboarding 
+WHERE id = $1
 `
 
 func (q *Queries) DeleteOnboarding(ctx context.Context, id int32) error {
@@ -22,9 +22,9 @@ func (q *Queries) DeleteOnboarding(ctx context.Context, id int32) error {
 }
 
 const getOnboarding = `-- name: GetOnboarding :one
-SELECT "id", "image", "title", "description" 
-FROM "onboarding" 
-WHERE "id" = $1
+SELECT id, image, title, description 
+FROM onboarding
+WHERE id = $1
 `
 
 func (q *Queries) GetOnboarding(ctx context.Context, id int32) (Onboarding, error) {
@@ -40,7 +40,7 @@ func (q *Queries) GetOnboarding(ctx context.Context, id int32) (Onboarding, erro
 }
 
 const insertOnboarding = `-- name: InsertOnboarding :one
-INSERT INTO "onboarding" ("image", "title", "description") 
+INSERT INTO onboarding (image, title, description) 
 VALUES ($1, $2, $3) 
 RETURNING id, image, title, description
 `
@@ -64,9 +64,9 @@ func (q *Queries) InsertOnboarding(ctx context.Context, arg InsertOnboardingPara
 }
 
 const updateOnboarding = `-- name: UpdateOnboarding :one
-UPDATE "onboarding" 
-SET "image" = $1, "title" = $2, "description" = $3
-WHERE "id" = $4
+UPDATE onboarding
+SET image = $1, title = $2, description = $3
+WHERE id = $4
 RETURNING id, image, title, description
 `
 
