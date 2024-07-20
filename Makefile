@@ -18,4 +18,7 @@ migratedown1:
 new_migration:
 	migrate create -ext sql -dir db/migration -seq $(name)
 
-.PHONY: postgres migrateup1 migrateup migratedown migratedown1 new_migration
+sqlc:
+	sqlc generate
+
+.PHONY: postgres migrateup1 migrateup migratedown migratedown1 new_migration sqlc
