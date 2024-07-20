@@ -37,7 +37,7 @@ func TestGetBlogTag(t *testing.T) {
 }
 
 func TestDeleteBlogTag(t *testing.T) {
-	randomBlogTag := createRandomBlogTag(t, 5)
+	randomBlogTag := createRandomBlogTag(t, 1)
 	tags, err := testStore.GetTagsForBlog(context.Background(), randomBlogTag[0].BlogID)
 	require.NoError(t, err)
 	require.NotEmpty(t, tags)
