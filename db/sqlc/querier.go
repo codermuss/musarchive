@@ -18,6 +18,7 @@ type Querier interface {
 	DeleteProfile(ctx context.Context, userID int32) error
 	DeleteTag(ctx context.Context, id int32) error
 	DeleteUser(ctx context.Context, id int32) error
+	DeleteUserPost(ctx context.Context, arg DeleteUserPostParams) error
 	GetBlog(ctx context.Context, id int32) (Blog, error)
 	GetCategoriesForBlog(ctx context.Context, blogID int32) ([]Category, error)
 	GetCategory(ctx context.Context, id int32) (Category, error)
@@ -27,6 +28,8 @@ type Querier interface {
 	GetTag(ctx context.Context, id int32) (Tag, error)
 	GetTagsForBlog(ctx context.Context, blogID int32) ([]Tag, error)
 	GetUser(ctx context.Context, id int32) (User, error)
+	GetUserBlog(ctx context.Context, arg GetUserBlogParams) (GetUserBlogRow, error)
+	GetUserBlogs(ctx context.Context, userID int32) ([]GetUserBlogsRow, error)
 	InsertBlog(ctx context.Context, arg InsertBlogParams) (Blog, error)
 	InsertBlogCategory(ctx context.Context, arg InsertBlogCategoryParams) (BlogCategory, error)
 	InsertBlogTag(ctx context.Context, arg InsertBlogTagParams) (BlogTag, error)
@@ -36,6 +39,7 @@ type Querier interface {
 	InsertProfile(ctx context.Context, arg InsertProfileParams) (Profile, error)
 	InsertTag(ctx context.Context, name string) (Tag, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
+	InsertUserPost(ctx context.Context, arg InsertUserPostParams) (UserPost, error)
 	UpdateBlog(ctx context.Context, arg UpdateBlogParams) (Blog, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateFeaturedStory(ctx context.Context, arg UpdateFeaturedStoryParams) (FeaturedStory, error)
