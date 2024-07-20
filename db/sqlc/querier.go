@@ -10,18 +10,21 @@ import (
 
 type Querier interface {
 	DeleteBlog(ctx context.Context, id int32) error
+	DeleteBlogCategory(ctx context.Context, arg DeleteBlogCategoryParams) error
 	DeleteBlogTag(ctx context.Context, arg DeleteBlogTagParams) error
 	DeleteCategory(ctx context.Context, id int32) error
 	DeleteOnboarding(ctx context.Context, id int32) error
 	DeleteTag(ctx context.Context, id int32) error
 	DeleteUser(ctx context.Context, id int32) error
 	GetBlog(ctx context.Context, id int32) (Blog, error)
+	GetCategoriesForBlog(ctx context.Context, blogID int32) ([]Category, error)
 	GetCategory(ctx context.Context, id int32) (Category, error)
 	GetOnboarding(ctx context.Context, id int32) (Onboarding, error)
 	GetTag(ctx context.Context, id int32) (Tag, error)
 	GetTagsForBlog(ctx context.Context, blogID int32) ([]Tag, error)
 	GetUser(ctx context.Context, id int32) (User, error)
 	InsertBlog(ctx context.Context, arg InsertBlogParams) (Blog, error)
+	InsertBlogCategory(ctx context.Context, arg InsertBlogCategoryParams) (BlogCategory, error)
 	InsertBlogTag(ctx context.Context, arg InsertBlogTagParams) (BlogTag, error)
 	InsertCategory(ctx context.Context, name string) (Category, error)
 	InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) (Onboarding, error)
