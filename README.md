@@ -1,3 +1,6 @@
+![musarchive](https://github.com/user-attachments/assets/fb99cf42-9563-4902-96c4-1af67daaff47)
+
+
 # Blog Service
 
 This project sets up the backend for a blogging platform.
