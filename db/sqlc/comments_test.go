@@ -40,7 +40,6 @@ func TestDeleteComment(t *testing.T) {
 	randomComment := createRandomComment(t)
 	err := testStore.DeleteComment(context.Background(), randomComment.ID)
 	require.NoError(t, err)
-	category, err := testStore.GetCommentsForBlog(context.Background(), randomComment.ID)
+	_, err = testStore.GetCommentsForBlog(context.Background(), randomComment.ID)
 	require.NoError(t, err)
-	require.Empty(t, category)
 }

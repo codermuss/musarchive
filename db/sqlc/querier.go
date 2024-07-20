@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
@@ -30,6 +32,7 @@ type Querier interface {
 	GetFollowingUsers(ctx context.Context, followerID int32) ([]GetFollowingUsersRow, error)
 	GetOnboarding(ctx context.Context, id int32) (Onboarding, error)
 	GetProfile(ctx context.Context, userID int32) (Profile, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTag(ctx context.Context, id int32) (Tag, error)
 	GetTagsForBlog(ctx context.Context, blogID int32) ([]Tag, error)
 	GetUser(ctx context.Context, id int32) (User, error)
@@ -43,6 +46,7 @@ type Querier interface {
 	InsertFeaturedStory(ctx context.Context, arg InsertFeaturedStoryParams) (FeaturedStory, error)
 	InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) (Onboarding, error)
 	InsertProfile(ctx context.Context, arg InsertProfileParams) (Profile, error)
+	InsertSession(ctx context.Context, arg InsertSessionParams) (Session, error)
 	InsertTag(ctx context.Context, name string) (Tag, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 	InsertUserFollower(ctx context.Context, arg InsertUserFollowerParams) (UserFollower, error)
