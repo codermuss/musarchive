@@ -13,6 +13,7 @@ type Querier interface {
 	DeleteBlogCategory(ctx context.Context, arg DeleteBlogCategoryParams) error
 	DeleteBlogTag(ctx context.Context, arg DeleteBlogTagParams) error
 	DeleteCategory(ctx context.Context, id int32) error
+	DeleteComment(ctx context.Context, id int32) error
 	DeleteFeaturedStory(ctx context.Context, id int32) error
 	DeleteOnboarding(ctx context.Context, id int32) error
 	DeleteProfile(ctx context.Context, userID int32) error
@@ -23,6 +24,7 @@ type Querier interface {
 	GetBlog(ctx context.Context, id int32) (Blog, error)
 	GetCategoriesForBlog(ctx context.Context, blogID int32) ([]Category, error)
 	GetCategory(ctx context.Context, id int32) (Category, error)
+	GetCommentsForBlog(ctx context.Context, blogID int32) ([]Comment, error)
 	GetFeaturedStory(ctx context.Context, id int32) (FeaturedStory, error)
 	GetFollowersOfUser(ctx context.Context, userID int32) ([]GetFollowersOfUserRow, error)
 	GetFollowingUsers(ctx context.Context, followerID int32) ([]GetFollowingUsersRow, error)
@@ -37,6 +39,7 @@ type Querier interface {
 	InsertBlogCategory(ctx context.Context, arg InsertBlogCategoryParams) (BlogCategory, error)
 	InsertBlogTag(ctx context.Context, arg InsertBlogTagParams) (BlogTag, error)
 	InsertCategory(ctx context.Context, name string) (Category, error)
+	InsertComment(ctx context.Context, arg InsertCommentParams) (Comment, error)
 	InsertFeaturedStory(ctx context.Context, arg InsertFeaturedStoryParams) (FeaturedStory, error)
 	InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) (Onboarding, error)
 	InsertProfile(ctx context.Context, arg InsertProfileParams) (Profile, error)
