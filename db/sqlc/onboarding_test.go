@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateRandomOnboarding(t *testing.T) {
+func createRandomOnboarding(t *testing.T) Onboarding {
 	title, description, image := util.RandomTitle(), util.RandomDescription(), util.RandomImage()
 	arg := InsertOnboardingParams{
 		Title:       title,
@@ -31,4 +32,21 @@ func TestCreateRandomOnboarding(t *testing.T) {
 
 	require.NotEmpty(t, image, onboarding.Image.String)
 	require.Equal(t, image, onboarding.Image.String)
+	return onboarding
+}
+
+func TestCreateRandomOnboarding(t *testing.T) {
+	createRandomOnboarding(t)
+}
+
+func TestGetOnboarding(t *testing.T) {
+	randomOnboarding := createRandomOnboarding(t)
+	onboarding, err := testStore.GetOnboarding(context.Background(), randomOnboarding.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, onboarding)
+	fmt.Println(onboarding)
+	require.Equal(t, randomOnboarding.ID, onboarding.ID)
+	require.Equal(t, randomOnboarding.Title, onboarding.Title)
+	require.Equal(t, randomOnboarding.Description, onboarding.Description)
+	require.Equal(t, randomOnboarding.Image, onboarding.Image)
 }
