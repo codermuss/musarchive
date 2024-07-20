@@ -23,7 +23,7 @@ func TestCreateRandomcategory(t *testing.T) {
 	createRandomCategory(t)
 }
 
-func TestGetcategory(t *testing.T) {
+func TestGetCategory(t *testing.T) {
 	randomCategory := createRandomCategory(t)
 	category, err := testStore.GetCategory(context.Background(), randomCategory.ID)
 	require.NoError(t, err)
@@ -33,7 +33,7 @@ func TestGetcategory(t *testing.T) {
 
 }
 
-func TestUpdatecategory(t *testing.T) {
+func TestUpdateCategory(t *testing.T) {
 	randomcategory := createRandomCategory(t)
 	newCategoryName := util.RandomString(6)
 	updatecategory := UpdateCategoryParams{
@@ -48,7 +48,7 @@ func TestUpdatecategory(t *testing.T) {
 	require.Equal(t, randomcategory.ID, category.ID)
 }
 
-func TestDeletecategory(t *testing.T) {
+func TestDeleteCategory(t *testing.T) {
 	randomcategory := createRandomCategory(t)
 	err := testStore.DeleteCategory(context.Background(), randomcategory.ID)
 	require.NoError(t, err)
