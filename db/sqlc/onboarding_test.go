@@ -50,3 +50,26 @@ func TestGetOnboarding(t *testing.T) {
 	require.Equal(t, randomOnboarding.Description, onboarding.Description)
 	require.Equal(t, randomOnboarding.Image, onboarding.Image)
 }
+
+func TestUpdateOnboarding(t *testing.T) {
+	randomOnboarding := createRandomOnboarding(t)
+	updateOnboarding := UpdateOnboardingParams{
+		ID:          randomOnboarding.ID,
+		Title:       util.RandomTitle(),
+		Description: util.RandomDescription(),
+		Image: pgtype.Text{
+			Valid:  true,
+			String: util.RandomImage(),
+		},
+	}
+	fmt.Println(randomOnboarding)
+	onboarding, err := testStore.UpdateOnboarding(context.Background(), updateOnboarding)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, onboarding)
+	fmt.Println(onboarding)
+	require.Equal(t, randomOnboarding.ID, onboarding.ID)
+	require.Equal(t, updateOnboarding.Title, onboarding.Title)
+	require.Equal(t, updateOnboarding.Description, onboarding.Description)
+	require.Equal(t, updateOnboarding.Image, onboarding.Image)
+}
