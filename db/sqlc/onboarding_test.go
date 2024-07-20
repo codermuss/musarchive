@@ -73,3 +73,13 @@ func TestUpdateOnboarding(t *testing.T) {
 	require.Equal(t, updateOnboarding.Description, onboarding.Description)
 	require.Equal(t, updateOnboarding.Image, onboarding.Image)
 }
+
+func TestDeleteOnboarding(t *testing.T) {
+	randomOnboarding := createRandomOnboarding(t)
+	err := testStore.DeleteOnboarding(context.Background(), randomOnboarding.ID)
+	require.NoError(t, err)
+	onboarding, err := testStore.GetOnboarding(context.Background(), randomOnboarding.ID)
+	require.Error(t, err)
+	require.EqualError(t, err, ErrRecordNotFound.Error())
+	require.Empty(t, onboarding)
+}
