@@ -34,14 +34,18 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 func (server *Server) setupRouter() {
 	router := gin.Default()
 
-	// Serve the bundled files
+	// Serve the API endpoints
+	api := router.Group("/v1")
+	{
+		api.GET("/onboardings", server.GetOnboardings)
+	}
+
+	// Serve the bundled static files
 	statikFS, err := fs.New()
 	if err != nil {
 		panic(err)
 	}
-	router.StaticFS("/swagger-ui", statikFS)
-
-	// Serve the Swagger UI files
+	router.StaticFS("/swagger", statikFS)
 	server.router = router
 }
 

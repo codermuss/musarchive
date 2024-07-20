@@ -51,6 +51,7 @@ type Querier interface {
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 	InsertUserFollower(ctx context.Context, arg InsertUserFollowerParams) (UserFollower, error)
 	InsertUserPost(ctx context.Context, arg InsertUserPostParams) (UserPost, error)
+	ListOnboarding(ctx context.Context) ([]Onboarding, error)
 	UpdateBlog(ctx context.Context, arg UpdateBlogParams) (Blog, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateFeaturedStory(ctx context.Context, arg UpdateFeaturedStoryParams) (FeaturedStory, error)
