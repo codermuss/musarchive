@@ -49,6 +49,10 @@ func RandomMoney() float64 {
 	return float64(RandomInt(0, 1000))
 }
 
+func RandomLike() int32 {
+	return int32(RandomInt(0, 1000))
+}
+
 func RandomEmail() string {
 	return fmt.Sprintf("%s@email.com", RandomString(6))
 }
