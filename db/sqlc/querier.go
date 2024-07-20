@@ -12,18 +12,22 @@ type Querier interface {
 	DeleteBlog(ctx context.Context, id int32) error
 	DeleteCategory(ctx context.Context, id int32) error
 	DeleteOnboarding(ctx context.Context, id int32) error
+	DeleteTag(ctx context.Context, id int32) error
 	DeleteUser(ctx context.Context, id int32) error
 	GetBlog(ctx context.Context, id int32) (Blog, error)
 	GetCategory(ctx context.Context, id int32) (Category, error)
 	GetOnboarding(ctx context.Context, id int32) (Onboarding, error)
+	GetTag(ctx context.Context, id int32) (Tag, error)
 	GetUser(ctx context.Context, id int32) (User, error)
 	InsertBlog(ctx context.Context, arg InsertBlogParams) (Blog, error)
 	InsertCategory(ctx context.Context, name string) (Category, error)
 	InsertOnboarding(ctx context.Context, arg InsertOnboardingParams) (Onboarding, error)
+	InsertTag(ctx context.Context, name string) (Tag, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 	UpdateBlog(ctx context.Context, arg UpdateBlogParams) (Blog, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateOnboarding(ctx context.Context, arg UpdateOnboardingParams) (Onboarding, error)
+	UpdateTag(ctx context.Context, arg UpdateTagParams) (Tag, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
