@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"time"
 )
 
 const alphabet = "abcdefghijklmnoprstuvwxyz"
@@ -55,4 +56,26 @@ func RandomLike() int32 {
 
 func RandomEmail() string {
 	return fmt.Sprintf("%s@email.com", RandomString(6))
+}
+
+func DateNow() time.Time {
+	now := time.Now().UTC()
+
+	// Extract the year, month, and day
+	year, month, day := now.Date()
+
+	// Create a new time.Time object with only the date portion
+	dateOnly := time.Date(year, month, day, 0, 0, 0, 0, now.Location())
+	return dateOnly
+}
+
+func DateYesterday() time.Time {
+	now := time.Now().Add(24 * time.Hour).UTC()
+
+	// Extract the year, month, and day
+	year, month, day := now.Date()
+
+	// Create a new time.Time object with only the date portion
+	dateOnly := time.Date(year, month, day, 0, 0, 0, 0, now.Location())
+	return dateOnly
 }
