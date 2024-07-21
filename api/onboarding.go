@@ -10,9 +10,18 @@ func (server *Server) GetOnboardings(ctx *gin.Context) {
 
 	onboardings, err := server.store.ListOnboarding(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		BuildResponse(ctx, BaseResponse{
+			Code: http.StatusInternalServerError,
+			Message: ResponseMessage{
+				Type:    ERROR,
+				Content: "Internal error: " + err.Error(),
+			},
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, onboardings)
+	BuildResponse(ctx, BaseResponse{
+		Code: http.StatusOK,
+		Data: onboardings,
+	})
 }

@@ -16,7 +16,7 @@ type Server struct {
 	config     util.Config
 	store      db.Store
 	tokenMaker token.Maker
-	router     *gin.Engine
+	Router     *gin.Engine
 }
 
 // * Note [codermuss]: NewServer creates a new HTTP server and setup routing
@@ -32,7 +32,10 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 }
 
 func (server *Server) setupRouter() {
-	router := gin.Default()
+	router := gin.New()
+
+	router.Use(ZerologMiddleware())
+	router.Use(gin.Recovery())
 
 	// Serve the API endpoints
 	api := router.Group("/v1")
@@ -46,12 +49,7 @@ func (server *Server) setupRouter() {
 		panic(err)
 	}
 	router.StaticFS("/swagger", statikFS)
-	server.router = router
-}
-
-// * Note [codermuss]: Starts the HTTP server on a specific address.
-func (server *Server) Start(address string) error {
-	return server.router.Run(address)
+	server.Router = router
 }
 
 func errorResponse(err error) gin.H {
