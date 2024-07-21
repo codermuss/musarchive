@@ -1,0 +1,59 @@
+openapi: 3.0.3
+info:
+  title: Your API
+  description: API documentation for your application
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+paths:
+  /v1/onboardings:
+    get:
+      summary: Get list of onboardings
+      description: Retrieve a list of onboardings from the server
+      operationId: getOnboardings
+      tags:
+        - Onboarding
+      responses:
+        "200":
+          description: A list of onboardings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "New Employee Onboarding"
+                    description:
+                      type: string
+                      example: "Onboarding process for new employees"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+components:
+  schemas:
+    Onboarding:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "New Employee Onboarding"
+        description:
+          type: string
+          example: "Onboarding process for new employees"

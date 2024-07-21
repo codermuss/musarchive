@@ -63,6 +63,36 @@ func (q *Queries) InsertOnboarding(ctx context.Context, arg InsertOnboardingPara
 	return i, err
 }
 
+const listOnboarding = `-- name: ListOnboarding :many
+SELECT id, image, title, description 
+FROM onboarding
+`
+
+func (q *Queries) ListOnboarding(ctx context.Context) ([]Onboarding, error) {
+	rows, err := q.db.Query(ctx, listOnboarding)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Onboarding{}
+	for rows.Next() {
+		var i Onboarding
+		if err := rows.Scan(
+			&i.ID,
+			&i.Image,
+			&i.Title,
+			&i.Description,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateOnboarding = `-- name: UpdateOnboarding :one
 UPDATE onboarding
 SET image = $1, title = $2, description = $3

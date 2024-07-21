@@ -8,6 +8,10 @@ SELECT id, image, title, description
 FROM onboarding
 WHERE id = $1;
 
+-- name: ListOnboarding :many
+SELECT id, image, title, description 
+FROM onboarding;
+
 -- name: UpdateOnboarding :one
 UPDATE onboarding
 SET image = $1, title = $2, description = $3

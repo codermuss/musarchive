@@ -24,4 +24,7 @@ test:
 sqlc:
 	sqlc generate
 
-.PHONY: postgres migrateup1 migrateup migratedown migratedown1 new_migration sqlc
+server:
+	go run main.go
+
+.PHONY: postgres migrateup1 migrateup migratedown migratedown1 new_migration test sqlc server
