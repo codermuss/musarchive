@@ -8,6 +8,11 @@ SELECT id, user_id, title, summary, content, cover_image, created_at, updated_at
 FROM blogs 
 WHERE id = $1;
 
+-- name: GetBlogs :many
+SELECT id, user_id, title, summary, content, cover_image, created_at, updated_at, likes 
+FROM blogs 
+ORDER BY id LIMIT $1 OFFSET $2;
+
 -- name: UpdateBlog :one
 UPDATE blogs 
     SET
