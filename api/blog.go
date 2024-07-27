@@ -7,15 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
 	localization "github.com/mustafayilmazdev/musarchive/locales"
+	"github.com/mustafayilmazdev/musarchive/util"
 	"github.com/rs/zerolog/log"
 )
 
 func (server *Server) GetBlogs(ctx *gin.Context) {
-	localeValue := ctx.Query("locale")
-	pageStr := ctx.Query("page")
-	sizeStr := ctx.Query("size")
-	page := 1
-	size := 10
+	localeValue := ctx.Query(util.Locale)
+	pageStr := ctx.Query(util.Page)
+	sizeStr := ctx.Query(util.Size)
+	page := util.PageCount
+	size := util.SizeCount
 	log.Info().Msg(pageStr + " " + sizeStr)
 	if pageStr != "" {
 		var err error
@@ -28,7 +29,9 @@ func (server *Server) GetBlogs(ctx *gin.Context) {
 					Content: server.lm.Translate(localeValue, localization.Pagination_pageError, pageStr),
 				},
 			})
+			return
 		}
+
 	}
 
 	if sizeStr != "" {
@@ -42,7 +45,9 @@ func (server *Server) GetBlogs(ctx *gin.Context) {
 					Content: server.lm.Translate(localeValue, localization.Pagination_sizeError, sizeStr),
 				},
 			})
+			return
 		}
+
 	}
 
 	arg := db.GetBlogsParams{
@@ -51,13 +56,12 @@ func (server *Server) GetBlogs(ctx *gin.Context) {
 	}
 
 	blogs, err := server.store.GetBlogs(ctx, arg)
-	log.Info().Msgf("blogs: %v", len(blogs))
 	if err != nil {
 		BuildResponse(ctx, BaseResponse{
 			Code: http.StatusInternalServerError,
 			Message: ResponseMessage{
 				Type:    ERROR,
-				Content: "Internal error: " + err.Error(),
+				Content: server.lm.Translate(localeValue, localization.Errors_InternalError, err.Error()),
 			},
 		})
 		return
