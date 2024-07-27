@@ -6,7 +6,8 @@
       "MigrationInstance":"Cannot create new migrate instance",
       "MigrateUp":"Failed to run migrate up",
       "HttpGateway":"HTTP gateway server failed to server",
-      "HttpGatewayShutdown":"Failed to shutdown HTTP gateway server"
+      "HttpGatewayShutdown":"Failed to shutdown HTTP gateway server",
+      "InternalError":"Internal error: {{.arg0}}"
     },
     "Success":{
       "Migrate":"DB migrated successfully"
@@ -15,5 +16,9 @@
       "StartHttp":"Start HTTP gateway server at {{.arg0}}",
       "GracefulShutdown":"Graceful shutdown HTTP gateway server",
       "StopHttp":"HTTP gateway server is stopped"
+    },
+
+    "User":{
+      "RegisterSuccess":"User registered successfully!"
     }
 }

@@ -7,10 +7,12 @@ const (
 	Errors_ErrorFromWaitGroup = "Errors.ErrorFromWaitGroup"
 	Errors_HttpGateway = "Errors.HttpGateway"
 	Errors_HttpGatewayShutdown = "Errors.HttpGatewayShutdown"
+	Errors_InternalError = "Errors.InternalError"
 	Errors_MigrateUp = "Errors.MigrateUp"
 	Errors_MigrationInstance = "Errors.MigrationInstance"
 	Info_GracefulShutdown = "Info.GracefulShutdown"
 	Info_StartHttp = "Info.StartHttp"
 	Info_StopHttp = "Info.StopHttp"
 	Success_Migrate = "Success.Migrate"
+	User_RegisterSuccess = "User.RegisterSuccess"
 )
