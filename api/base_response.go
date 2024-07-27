@@ -25,3 +25,7 @@ type BaseResponse struct {
 func BuildResponse(ctx *gin.Context, response BaseResponse) {
 	ctx.JSON(response.Code, response)
 }
+
+func AbortResponse(ctx *gin.Context, response BaseResponse) {
+	ctx.AbortWithStatusJSON(response.Code, response)
+}

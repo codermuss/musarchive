@@ -23,7 +23,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, password, full_name, email, avatar, birth_date, password_changed_at, created_at 
+SELECT id, username, password, full_name, email, avatar,role, birth_date, password_changed_at, created_at 
 FROM users 
 WHERE username = $1
 `
@@ -38,6 +38,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.FullName,
 		&i.Email,
 		&i.Avatar,
+		&i.Role,
 		&i.BirthDate,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
@@ -46,9 +47,9 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO users (username, password, full_name, email, avatar, birth_date, password_changed_at, created_at) 
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-RETURNING id, username, password, full_name, email, avatar, birth_date, password_changed_at, created_at
+INSERT INTO users (username, password, full_name, email, avatar,role, birth_date, password_changed_at, created_at) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9) 
+RETURNING id, username, password, full_name, email, avatar, role, birth_date, password_changed_at, created_at
 `
 
 type InsertUserParams struct {
@@ -57,6 +58,7 @@ type InsertUserParams struct {
 	FullName          string      `json:"full_name"`
 	Email             string      `json:"email"`
 	Avatar            pgtype.Text `json:"avatar"`
+	Role              string      `json:"role"`
 	BirthDate         pgtype.Date `json:"birth_date"`
 	PasswordChangedAt time.Time   `json:"password_changed_at"`
 	CreatedAt         time.Time   `json:"created_at"`
@@ -69,6 +71,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 		arg.FullName,
 		arg.Email,
 		arg.Avatar,
+		arg.Role,
 		arg.BirthDate,
 		arg.PasswordChangedAt,
 		arg.CreatedAt,
@@ -81,6 +84,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 		&i.FullName,
 		&i.Email,
 		&i.Avatar,
+		&i.Role,
 		&i.BirthDate,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
@@ -90,9 +94,9 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users 
-SET username = $1, password = $2, full_name = $3, email = $4, avatar = $5, birth_date = $6, password_changed_at = $7, created_at = $8
-WHERE id = $9
-RETURNING id, username, password, full_name, email, avatar, birth_date, password_changed_at, created_at
+SET username = $1, password = $2, full_name = $3, email = $4, avatar = $5, role=$6, birth_date = $7, password_changed_at = $8, created_at = $9
+WHERE id = $10
+RETURNING id, username, password, full_name, email, avatar, role, birth_date, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
@@ -101,6 +105,7 @@ type UpdateUserParams struct {
 	FullName          string      `json:"full_name"`
 	Email             string      `json:"email"`
 	Avatar            pgtype.Text `json:"avatar"`
+	Role              string      `json:"role"`
 	BirthDate         pgtype.Date `json:"birth_date"`
 	PasswordChangedAt time.Time   `json:"password_changed_at"`
 	CreatedAt         time.Time   `json:"created_at"`
@@ -114,6 +119,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.FullName,
 		arg.Email,
 		arg.Avatar,
+		arg.Role,
 		arg.BirthDate,
 		arg.PasswordChangedAt,
 		arg.CreatedAt,
@@ -127,6 +133,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.FullName,
 		&i.Email,
 		&i.Avatar,
+		&i.Role,
 		&i.BirthDate,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,

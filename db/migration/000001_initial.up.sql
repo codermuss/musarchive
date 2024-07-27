@@ -12,6 +12,7 @@ CREATE TABLE "users" (
   "full_name" varchar NOT NULL,
   "email" varchar UNIQUE NOT NULL,
   "avatar" varchar,
+  "role" varchar(20) NOT NULL DEFAULT 'standard',
   "birth_date" date NOT NULL DEFAULT '0001-01-01',
   "password_changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
   "created_at" timestamptz NOT NULL DEFAULT (now())

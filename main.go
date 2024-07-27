@@ -45,7 +45,7 @@ func main() {
 	}
 
 	// Initialize the LocalizationManager singleton
-	if err := localization.Initialize(); err != nil {
+	if err := localization.Initialize(util.LocalizationPath + util.DefaultLocale + util.LocalizationType); err != nil {
 		log.Fatal().Msg("Can not load localization")
 	}
 

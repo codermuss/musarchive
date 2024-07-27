@@ -24,5 +24,10 @@
     "Pagination":{
       "pageError":"Invalid page number: {{.arg0}}",
       "sizeError":"Invalid size number: {{.arg0}}"
+    },
+    "Middleware":{
+      "UnsupportedAuthorization":"Unsupported authorization type {{.arg0}}",
+      "InvalidAuthorization":"Invalid authorization header format",
+      "HeaderIsNotProvided":"Authorization header is not provided"
     }
 }
