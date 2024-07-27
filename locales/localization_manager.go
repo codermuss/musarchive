@@ -27,7 +27,7 @@ var (
 )
 
 // Initialize initializes the LocalizationManager singleton
-func Initialize() error {
+func Initialize(path string) error {
 	once.Do(func() {
 		bundle := i18n.NewBundle(language.English)
 		bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
@@ -38,7 +38,7 @@ func Initialize() error {
 
 		// Load all supported languages at startup
 		for _, lang := range supportedLangs {
-			if err := instance.loadLanguageFiles(lang); err != nil {
+			if err := instance.loadLanguageFiles(path, lang); err != nil {
 				initErr = fmt.Errorf("failed to load language files for %s: %v", lang, err)
 				return
 			}
@@ -46,7 +46,7 @@ func Initialize() error {
 		}
 
 		// Ensure the default language is loaded
-		if err := instance.loadLanguageFiles(defaultLang); err != nil {
+		if err := instance.loadLanguageFiles(path, defaultLang); err != nil {
 			initErr = fmt.Errorf("failed to load default language files: %v", err)
 			return
 		}
@@ -61,8 +61,8 @@ func GetInstance() *LocalizationManager {
 }
 
 // loadLanguageFiles loads the translation files for a given language
-func (lm *LocalizationManager) loadLanguageFiles(lang string) error {
-	_, err := lm.bundle.LoadMessageFile(fmt.Sprintf("%s%s%s", util.LocalizationPath, lang, util.LocalizationType))
+func (lm *LocalizationManager) loadLanguageFiles(path, lang string) error {
+	_, err := lm.bundle.LoadMessageFile(path)
 	log.Info().Msgf("%s%s%s", util.LocalizationPath, lang, util.LocalizationType)
 	return err
 }

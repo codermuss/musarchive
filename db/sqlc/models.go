@@ -95,6 +95,7 @@ type User struct {
 	FullName          string      `json:"full_name"`
 	Email             string      `json:"email"`
 	Avatar            pgtype.Text `json:"avatar"`
+	Role              string      `json:"role"`
 	BirthDate         pgtype.Date `json:"birth_date"`
 	PasswordChangedAt time.Time   `json:"password_changed_at"`
 	CreatedAt         time.Time   `json:"created_at"`

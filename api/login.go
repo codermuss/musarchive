@@ -85,7 +85,7 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, accessPayload, err := server.tokenMaker.CreateToken(int(user.ID), server.config.AccessTokenDuration)
+	accessToken, accessPayload, err := server.tokenMaker.CreateToken(int(user.ID), user.Role, server.config.AccessTokenDuration)
 	if err != nil {
 		BuildResponse(ctx, BaseResponse{
 			Code: http.StatusInternalServerError,
@@ -99,6 +99,7 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 
 	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(
 		int(user.ID),
+		user.Role,
 		server.config.RefreshTokenDuration,
 	)
 	if err != nil {
