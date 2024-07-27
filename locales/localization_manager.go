@@ -3,110 +3,94 @@ package localization
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+
 	"sync"
 
 	"github.com/mustafayilmazdev/musarchive/util"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/text/language"
 )
+
+type LocalizationManager struct {
+	bundle     *i18n.Bundle
+	localizers sync.Map // concurrent-safe map for localizers
+}
 
 var (
 	instance *LocalizationManager
 	once     sync.Once
+	initErr  error
+
+	supportedLangs = []string{"en"}
+	defaultLang    = "en"
 )
 
-// GetInstance returns the global instance of LocalizationManager.
-func Instance() *LocalizationManager {
+// Initialize initializes the LocalizationManager singleton
+func Initialize() error {
+	once.Do(func() {
+		bundle := i18n.NewBundle(language.English)
+		bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 
+		instance = &LocalizationManager{
+			bundle: bundle,
+		}
+
+		// Load all supported languages at startup
+		for _, lang := range supportedLangs {
+			if err := instance.loadLanguageFiles(lang); err != nil {
+				initErr = fmt.Errorf("failed to load language files for %s: %v", lang, err)
+				return
+			}
+			instance.localizers.Store(lang, i18n.NewLocalizer(instance.bundle, lang))
+		}
+
+		// Ensure the default language is loaded
+		if err := instance.loadLanguageFiles(defaultLang); err != nil {
+			initErr = fmt.Errorf("failed to load default language files: %v", err)
+			return
+		}
+		instance.localizers.Store(defaultLang, i18n.NewLocalizer(instance.bundle, defaultLang))
+	})
+	return initErr
+}
+
+// GetInstance returns the singleton instance of LocalizationManager
+func GetInstance() *LocalizationManager {
 	return instance
 }
 
-func InitLocalization(defaultLang string) {
-	once.Do(func() {
-		instance = newLocalizationManager(defaultLang)
-	})
-}
-
-// LocalizationManager handles loading and fetching translations.
-type LocalizationManager struct {
-	bundle      *i18n.Bundle
-	localizers  map[string]*i18n.Localizer
-	loadedLangs map[string]bool
-	mu          sync.RWMutex
-}
-
-// NewLocalizationManager creates a new LocalizationManager.
-func newLocalizationManager(defaultLang string) *LocalizationManager {
-	bundle := i18n.NewBundle(language.English)
-	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
-
-	manager := &LocalizationManager{
-		bundle:      bundle,
-		localizers:  make(map[string]*i18n.Localizer),
-		loadedLangs: make(map[string]bool),
-	}
-
-	// Load default language files
-	if err := manager.LoadLanguage(defaultLang); err != nil {
-		log.Fatalf("Failed to load default language files: %v", err)
-	}
-
-	return manager
-}
-
-// LoadLanguage loads translation files for a specific language.
-func (lm *LocalizationManager) LoadLanguage(lang string) error {
-	lm.mu.Lock()
-	defer lm.mu.Unlock()
-
-	if lm.loadedLangs[lang] {
-		return nil
-	}
-
-	if err := lm.loadLanguageFiles(lang); err != nil {
-		return err
-	}
-
-	lm.localizers[lang] = i18n.NewLocalizer(lm.bundle, lang)
-	lm.loadedLangs[lang] = true
-	return nil
-}
-
-// loadLanguageFiles loads translation files for a specific language.
+// loadLanguageFiles loads the translation files for a given language
 func (lm *LocalizationManager) loadLanguageFiles(lang string) error {
 	_, err := lm.bundle.LoadMessageFile(fmt.Sprintf("%s%s%s", util.LocalizationPath, lang, util.LocalizationType))
+	log.Info().Msgf("%s%s%s", util.LocalizationPath, lang, util.LocalizationType)
 	return err
 }
 
-// Translate fetches a localized string for a given language, message ID, and positional parameters.
+// Translate retrieves the localized message for the given language and message ID
 func (lm *LocalizationManager) Translate(lang, messageID string, args ...interface{}) string {
-	lm.mu.RLock()
-	localizer, exists := lm.localizers[lang]
-	lm.mu.RUnlock()
+	localizer, _ := lm.localizers.Load(lang)
 
-	// Load language if not already loaded
-	if !exists {
-		if err := lm.LoadLanguage(lang); err != nil {
-			return fmt.Sprintf("[Failed to load language %s: %s]", lang, err)
+	if loc, ok := localizer.(*i18n.Localizer); ok {
+		params := make(map[string]interface{})
+		for i, arg := range args {
+			params[fmt.Sprintf("arg%d", i)] = arg
 		}
-		lm.mu.RLock()
-		localizer = lm.localizers[lang]
-		lm.mu.RUnlock()
+
+		message, err := loc.Localize(&i18n.LocalizeConfig{
+			MessageID:    messageID,
+			TemplateData: params,
+		})
+		if err != nil {
+			return fmt.Sprintf("[Error localizing message: %s]", err)
+		}
+		return message
 	}
 
-	// Prepare parameter map
-	params := make(map[string]interface{})
-	for i, arg := range args {
-		params[fmt.Sprintf("arg%d", i)] = arg
-	}
+	return "[Localizer not found]"
+}
 
-	message, err := localizer.Localize(&i18n.LocalizeConfig{
-		MessageID:    messageID,
-		TemplateData: params,
-	})
-	if err != nil {
-		return fmt.Sprintf("[Error localizing message: %s]", err)
-	}
-	return message
+// GetSupportedLanguages returns the list of supported languages
+func GetSupportedLanguages() []string {
+	return supportedLangs
 }
