@@ -1,6 +1,8 @@
 package util
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
@@ -8,11 +10,13 @@ import (
 // * Note [codermuss]: The values are read by viper from a config file or environment variables.
 
 type Config struct {
-	Environment       string `mapstructure:"ENVIRONMENT"`
-	DBSource          string `mapstructure:"DB_SOURCE"`
-	MigrationUrl      string `mapstructure:"MIGRATION_URL"`
-	HTTPServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
-	TokenSymetricKey  string `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	Environment          string        `mapstructure:"ENVIRONMENT"`
+	DBSource             string        `mapstructure:"DB_SOURCE"`
+	MigrationUrl         string        `mapstructure:"MIGRATION_URL"`
+	HTTPServerAddress    string        `mapstructure:"HTTP_SERVER_ADDRESS"`
+	TokenSymetricKey     string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 }
 
 // * Note [codermuss]: LoadConfig reads configuration from file or environment variables.

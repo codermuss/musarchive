@@ -6,7 +6,7 @@ RETURNING *;
 -- name: GetUser :one
 SELECT id, username, password, full_name, email, avatar, birth_date, password_changed_at, created_at 
 FROM users 
-WHERE id = $1;
+WHERE username = $1;
 
 -- name: UpdateUser :one
 UPDATE users 

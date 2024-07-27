@@ -35,7 +35,7 @@ type Querier interface {
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTag(ctx context.Context, id int32) (Tag, error)
 	GetTagsForBlog(ctx context.Context, blogID int32) ([]Tag, error)
-	GetUser(ctx context.Context, id int32) (User, error)
+	GetUser(ctx context.Context, username string) (User, error)
 	GetUserBlog(ctx context.Context, arg GetUserBlogParams) (GetUserBlogRow, error)
 	GetUserBlogs(ctx context.Context, userID int32) ([]GetUserBlogsRow, error)
 	InsertBlog(ctx context.Context, arg InsertBlogParams) (Blog, error)

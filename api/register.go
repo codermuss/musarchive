@@ -21,10 +21,9 @@ type registerUserRequest struct {
 	BirthDate pgtype.Date `json:"birth_date" binding:"required"`
 }
 
-type registerUserResponse struct {
-	ID       int32  `json:"id"`
-	Username string `json:"username"`
-
+type UserResponse struct {
+	ID                int32       `json:"id"`
+	Username          string      `json:"username"`
 	FullName          string      `json:"full_name"`
 	Email             string      `json:"email"`
 	Avatar            pgtype.Text `json:"avatar"`
@@ -94,7 +93,7 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	responseUser := registerUserResponse{
+	responseUser := UserResponse{
 		ID:                user.ID,
 		Username:          user.Username,
 		FullName:          user.FullName,
