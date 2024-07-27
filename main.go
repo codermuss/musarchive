@@ -12,6 +12,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mustafayilmazdev/musarchive/api"
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
+	localization "github.com/mustafayilmazdev/musarchive/locales"
+
 	"golang.org/x/sync/errgroup"
 
 	"github.com/mustafayilmazdev/musarchive/util"
@@ -42,34 +44,41 @@ func main() {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 
+	// Initialize the LocalizationManager singleton
+	if err := localization.Initialize(); err != nil {
+		log.Fatal().Msg("Can not load localization")
+	}
+
+	lm := localization.GetInstance()
+
 	ctx, stop := signal.NotifyContext(context.Background(), interruptSignals...)
 	defer stop()
 
 	connPool, err := pgxpool.New(ctx, config.DBSource)
 	if err != nil {
-		log.Fatal().Err(err).Msg("cannot connect to db:")
+		log.Fatal().Err(err).Msg(lm.Translate(util.DefaultLocale, localization.Errors_CanNotConnectToDb, err))
 	}
 	runDBMigration(config.MigrationUrl, config.DBSource)
-	log.Info().Msg("db migrated successfully")
 	store := db.NewStore(connPool)
 	waitGroup, ctx := errgroup.WithContext(ctx)
 	runGinServer(config, ctx, waitGroup, store)
 
 	err = waitGroup.Wait()
 	if err != nil {
-		log.Fatal().Err(err).Msg("error from wait group")
+		log.Fatal().Err(err).Msg(lm.Translate(util.DefaultLocale, localization.Errors_ErrorFromWaitGroup, err))
 	}
 }
 
 func runDBMigration(migrationUrl, dbSource string) {
+	lm := localization.GetInstance()
 	migration, err := migrate.New(migrationUrl, dbSource)
 	if err != nil {
-		log.Fatal().Err(err).Msg("cannot create new migrate instance")
+		log.Fatal().Err(err).Msg(lm.Translate(util.DefaultLocale, localization.Errors_MigrationInstance))
 	}
 	if err = migration.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatal().Err(err).Msg("failed to run migrate up")
+		log.Fatal().Err(err).Msg(lm.Translate(util.DefaultLocale, localization.Errors_MigrateUp))
 	}
-	log.Info().Msg("db migrated successfully")
+	log.Info().Msg(lm.Translate(util.DefaultLocale, localization.Success_Migrate))
 }
 
 func runGinServer(config util.Config, ctx context.Context, waitGroup *errgroup.Group, store db.Store) {
@@ -86,27 +95,29 @@ func runGinServer(config util.Config, ctx context.Context, waitGroup *errgroup.G
 	}
 
 	waitGroup.Go(func() error {
-		log.Info().Msgf("start HTTP gateway server at %s", httpServer.Addr)
+		lm := localization.GetInstance()
+		log.Info().Msgf(lm.Translate(util.DefaultLocale, localization.Info_StartHttp, httpServer.Addr))
 		err = httpServer.ListenAndServe()
 		if err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				return nil
 			}
-			log.Fatal().Err(err).Msg("HTTP gateway server failed to server")
+			log.Fatal().Err(err).Msg(lm.Translate(util.DefaultLocale, localization.Errors_HttpGateway))
 			return err
 		}
 		return nil
 	})
 
 	waitGroup.Go(func() error {
+		lm := localization.GetInstance()
 		<-ctx.Done()
-		log.Info().Msg("graceful shutdown HTTP gateway server")
+		log.Info().Msg(lm.Translate("tr", localization.Info_StartHttp, httpServer.Addr))
 		err := httpServer.Shutdown(context.Background())
 		if err != nil {
-			log.Error().Err(err).Msg("failed to shutdown HTTP gateway server ")
+			log.Error().Err(err).Msg(lm.Translate(util.DefaultLocale, localization.Errors_HttpGatewayShutdown))
 			return err
 		}
-		log.Info().Msg("HTTP gateway server is stopped")
+		log.Info().Msg(lm.Translate(util.DefaultLocale, localization.Info_StopHttp))
 		return nil
 	})
 
