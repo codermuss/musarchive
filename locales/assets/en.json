@@ -20,5 +20,9 @@
 
     "User":{
       "RegisterSuccess":"User registered successfully!"
+    },
+    "Pagination":{
+      "pageError":"Invalid page number: {{.arg0}}",
+      "sizeError":"Invalid size number: {{.arg0}}"
     }
 }

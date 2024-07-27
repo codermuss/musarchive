@@ -24,6 +24,7 @@ type Querier interface {
 	DeleteUserFollower(ctx context.Context, arg DeleteUserFollowerParams) error
 	DeleteUserPost(ctx context.Context, arg DeleteUserPostParams) error
 	GetBlog(ctx context.Context, id int32) (Blog, error)
+	GetBlogs(ctx context.Context, arg GetBlogsParams) ([]Blog, error)
 	GetCategoriesForBlog(ctx context.Context, blogID int32) ([]Category, error)
 	GetCategory(ctx context.Context, id int32) (Category, error)
 	GetCommentsForBlog(ctx context.Context, blogID int32) ([]Comment, error)

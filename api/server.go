@@ -45,6 +45,7 @@ func (server *Server) setupRouter() {
 		api.GET("/onboardings", server.GetOnboardings)
 		api.POST("/register", server.RegisterUser)
 		api.POST("/login", server.LoginUser)
+		api.GET("/blogs", server.GetBlogs)
 	}
 
 	// Serve the bundled static files

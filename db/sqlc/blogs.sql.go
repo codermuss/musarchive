@@ -44,6 +44,47 @@ func (q *Queries) GetBlog(ctx context.Context, id int32) (Blog, error) {
 	return i, err
 }
 
+const getBlogs = `-- name: GetBlogs :many
+SELECT id, user_id, title, summary, content, cover_image, created_at, updated_at, likes 
+FROM blogs 
+ORDER BY id LIMIT $1 OFFSET $2
+`
+
+type GetBlogsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetBlogs(ctx context.Context, arg GetBlogsParams) ([]Blog, error) {
+	rows, err := q.db.Query(ctx, getBlogs, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Blog{}
+	for rows.Next() {
+		var i Blog
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Title,
+			&i.Summary,
+			&i.Content,
+			&i.CoverImage,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Likes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertBlog = `-- name: InsertBlog :one
 INSERT INTO blogs (user_id, title, summary, content, cover_image, created_at, updated_at, likes) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 

@@ -13,6 +13,8 @@ const (
 	Info_GracefulShutdown = "Info.GracefulShutdown"
 	Info_StartHttp = "Info.StartHttp"
 	Info_StopHttp = "Info.StopHttp"
+	Pagination_pageError = "Pagination.pageError"
+	Pagination_sizeError = "Pagination.sizeError"
 	Success_Migrate = "Success.Migrate"
 	User_RegisterSuccess = "User.RegisterSuccess"
 )
