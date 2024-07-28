@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -22,7 +23,7 @@ func (q *Queries) DeletePost(ctx context.Context, id int32) error {
 }
 
 const getFollowedPosts = `-- name: GetFollowedPosts :many
-SELECT p.id, p.user_id, p.title, p.summary, p.content, p.cover_image, p.created_at, p.updated_at, p.likes 
+SELECT p.id, p.user_id, p.title, p.content, p.cover_image, p.created_at, p.updated_at, p.likes 
 FROM posts p
 JOIN user_followers f ON p.user_id = f.user_id
 WHERE f.follower_id = $1
@@ -48,7 +49,6 @@ func (q *Queries) GetFollowedPosts(ctx context.Context, arg GetFollowedPostsPara
 			&i.ID,
 			&i.UserID,
 			&i.Title,
-			&i.Summary,
 			&i.Content,
 			&i.CoverImage,
 			&i.CreatedAt,
@@ -66,7 +66,7 @@ func (q *Queries) GetFollowedPosts(ctx context.Context, arg GetFollowedPostsPara
 }
 
 const getPost = `-- name: GetPost :one
-SELECT id, user_id, title, summary, content, cover_image, created_at, updated_at, likes 
+SELECT id, user_id, title, content, cover_image, created_at, updated_at, likes 
 FROM posts 
 WHERE id = $1
 `
@@ -78,7 +78,6 @@ func (q *Queries) GetPost(ctx context.Context, id int32) (Post, error) {
 		&i.ID,
 		&i.UserID,
 		&i.Title,
-		&i.Summary,
 		&i.Content,
 		&i.CoverImage,
 		&i.CreatedAt,
@@ -89,7 +88,7 @@ func (q *Queries) GetPost(ctx context.Context, id int32) (Post, error) {
 }
 
 const getPosts = `-- name: GetPosts :many
-SELECT id, user_id, title, summary, content, cover_image, created_at, updated_at, likes 
+SELECT id, user_id, title, content, cover_image, created_at, updated_at, likes 
 FROM posts 
 ORDER BY id LIMIT $1 OFFSET $2
 `
@@ -112,7 +111,6 @@ func (q *Queries) GetPosts(ctx context.Context, arg GetPostsParams) ([]Post, err
 			&i.ID,
 			&i.UserID,
 			&i.Title,
-			&i.Summary,
 			&i.Content,
 			&i.CoverImage,
 			&i.CreatedAt,
@@ -130,27 +128,25 @@ func (q *Queries) GetPosts(ctx context.Context, arg GetPostsParams) ([]Post, err
 }
 
 const insertPost = `-- name: InsertPost :one
-INSERT INTO posts (user_id, title, summary, content, cover_image, created_at, updated_at, likes) 
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-RETURNING id, user_id, title, summary, content, cover_image, created_at, updated_at, likes
+INSERT INTO posts (user_id, title, content, cover_image, created_at, updated_at, likes) 
+VALUES ($1, $2, $3, $4, $5, $6, $7) 
+RETURNING id, user_id, title, content, cover_image, created_at, updated_at, likes
 `
 
 type InsertPostParams struct {
-	UserID     pgtype.Int4        `json:"user_id"`
-	Title      string             `json:"title"`
-	Summary    string             `json:"summary"`
-	Content    string             `json:"content"`
-	CoverImage pgtype.Text        `json:"cover_image"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
-	Likes      pgtype.Int4        `json:"likes"`
+	UserID     pgtype.Int4 `json:"user_id"`
+	Title      string      `json:"title"`
+	Content    string      `json:"content"`
+	CoverImage pgtype.Text `json:"cover_image"`
+	CreatedAt  time.Time   `json:"created_at"`
+	UpdatedAt  time.Time   `json:"updated_at"`
+	Likes      int32       `json:"likes"`
 }
 
 func (q *Queries) InsertPost(ctx context.Context, arg InsertPostParams) (Post, error) {
 	row := q.db.QueryRow(ctx, insertPost,
 		arg.UserID,
 		arg.Title,
-		arg.Summary,
 		arg.Content,
 		arg.CoverImage,
 		arg.CreatedAt,
@@ -162,7 +158,6 @@ func (q *Queries) InsertPost(ctx context.Context, arg InsertPostParams) (Post, e
 		&i.ID,
 		&i.UserID,
 		&i.Title,
-		&i.Summary,
 		&i.Content,
 		&i.CoverImage,
 		&i.CreatedAt,
@@ -176,17 +171,15 @@ const updatePost = `-- name: UpdatePost :one
 UPDATE posts 
     SET
     title = COALESCE($1,title), 
-    summary = COALESCE($2,summary), 
-    content = COALESCE($3,content), 
-    cover_image = COALESCE($4,cover_image),  
-    likes = COALESCE($5,likes)
-    WHERE id = $6
-RETURNING id, user_id, title, summary, content, cover_image, created_at, updated_at, likes
+    content = COALESCE($2,content), 
+    cover_image = COALESCE($3,cover_image),  
+    likes = COALESCE($4,likes)
+    WHERE id = $5
+RETURNING id, user_id, title, content, cover_image, created_at, updated_at, likes
 `
 
 type UpdatePostParams struct {
 	Title      pgtype.Text `json:"title"`
-	Summary    pgtype.Text `json:"summary"`
 	Content    pgtype.Text `json:"content"`
 	CoverImage pgtype.Text `json:"cover_image"`
 	Likes      pgtype.Int4 `json:"likes"`
@@ -196,7 +189,6 @@ type UpdatePostParams struct {
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
 	row := q.db.QueryRow(ctx, updatePost,
 		arg.Title,
-		arg.Summary,
 		arg.Content,
 		arg.CoverImage,
 		arg.Likes,
@@ -207,7 +199,6 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		&i.ID,
 		&i.UserID,
 		&i.Title,
-		&i.Summary,
 		&i.Content,
 		&i.CoverImage,
 		&i.CreatedAt,

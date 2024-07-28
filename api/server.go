@@ -51,6 +51,7 @@ func (server *Server) setupRouter() {
 	{
 		authRoutes.GET("/posts", server.GetPosts)
 		authRoutes.GET("/followed_posts", server.GetFollowedPosts)
+		authRoutes.POST("/create_post", server.CreatePost)
 	}
 
 	// Serve the bundled static files

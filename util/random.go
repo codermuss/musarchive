@@ -84,6 +84,10 @@ func DateFixed() time.Time {
 	return time.Date(2000, time.May, 6, 0, 0, 0, 0, time.UTC)
 }
 
+func DateFixedLocal() time.Time {
+	return time.Date(2000, time.May, 6, 0, 0, 0, 0, time.Local)
+}
+
 func RandomOwner() string {
 	return RandomString(6)
 }

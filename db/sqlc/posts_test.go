@@ -18,12 +18,14 @@ func createRandomPost(t *testing.T) Post {
 			Int32: user.ID,
 		},
 		Title:   util.RandomTitle(),
-		Summary: util.RandomString(15),
 		Content: util.RandomDescription(),
 		CoverImage: pgtype.Text{
 			Valid:  true,
 			String: util.RandomImage(),
 		},
+		CreatedAt: util.DateFixedLocal(),
+		UpdatedAt: util.DateFixedLocal(),
+		Likes:     util.RandomLike(),
 	}
 	post, err := testStore.InsertPost(context.Background(), arg)
 	require.NoError(t, err)
@@ -31,11 +33,11 @@ func createRandomPost(t *testing.T) Post {
 
 	require.Equal(t, arg.UserID, post.UserID)
 	require.Equal(t, arg.Title, post.Title)
-	require.Equal(t, arg.Summary, post.Summary)
 	require.Equal(t, arg.Content, post.Content)
 	require.Equal(t, arg.Likes, post.Likes)
 	require.Equal(t, arg.CreatedAt, post.CreatedAt)
 	require.Equal(t, arg.UpdatedAt, post.UpdatedAt)
+	require.Equal(t, arg.Likes, post.Likes)
 
 	return post
 }
@@ -52,7 +54,6 @@ func TestGetBlog(t *testing.T) {
 
 	require.Equal(t, randomBlog.UserID, post.UserID)
 	require.Equal(t, randomBlog.Title, post.Title)
-	require.Equal(t, randomBlog.Summary, post.Summary)
 	require.Equal(t, randomBlog.Content, post.Content)
 	require.Equal(t, randomBlog.Likes, post.Likes)
 	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
@@ -74,7 +75,6 @@ func TestUpdatePostTitle(t *testing.T) {
 	require.NotEmpty(t, post)
 	require.Equal(t, randomBlog.UserID, post.UserID)
 	require.NotEqual(t, randomBlog.Title, post.Title)
-	require.Equal(t, randomBlog.Summary, post.Summary)
 	require.Equal(t, randomBlog.Content, post.Content)
 	require.Equal(t, randomBlog.Likes, post.Likes)
 	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
@@ -85,17 +85,12 @@ func TestUpdatePostSummary(t *testing.T) {
 	randomBlog := createRandomPost(t)
 	updatePost := UpdatePostParams{
 		ID: randomBlog.ID,
-		Summary: pgtype.Text{
-			Valid:  true,
-			String: util.RandomString(10),
-		},
 	}
 	post, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
 	require.NotEmpty(t, post)
 	require.Equal(t, randomBlog.UserID, post.UserID)
 	require.Equal(t, randomBlog.Title, post.Title)
-	require.NotEqual(t, randomBlog.Summary, post.Summary)
 	require.Equal(t, randomBlog.Content, post.Content)
 	require.Equal(t, randomBlog.Likes, post.Likes)
 	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
@@ -120,7 +115,6 @@ func TestUpdatePostContent(t *testing.T) {
 
 	require.Equal(t, randomBlog.UserID, post.UserID)
 	require.Equal(t, randomBlog.Title, post.Title)
-	require.Equal(t, randomBlog.Summary, post.Summary)
 	require.Equal(t, randomBlog.Likes, post.Likes)
 	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
 	require.Equal(t, randomBlog.UpdatedAt, post.UpdatedAt)
@@ -158,10 +152,6 @@ func TestUpdatePostAll(t *testing.T) {
 			Valid:  true,
 			String: util.RandomTitle(),
 		},
-		Summary: pgtype.Text{
-			Valid:  true,
-			String: util.RandomString(10),
-		},
 		Content: pgtype.Text{
 			Valid:  true,
 			String: util.RandomDescription(),
@@ -182,13 +172,11 @@ func TestUpdatePostAll(t *testing.T) {
 	require.NotEqual(t, randomBlog.CoverImage, post.CoverImage)
 	require.NotEqual(t, randomBlog.Likes, post.Likes)
 	require.NotEqual(t, randomBlog.Title, post.Title)
-	require.NotEqual(t, randomBlog.Summary, post.Summary)
 	require.NotEqual(t, randomBlog.Content, post.Content)
 
 	require.Equal(t, updatePost.Title.String, post.Title)
-	require.Equal(t, updatePost.Summary.String, post.Summary)
 	require.Equal(t, updatePost.Content.String, post.Content)
-	require.Equal(t, updatePost.Likes, post.Likes)
+	require.Equal(t, updatePost.Likes.Int32, post.Likes)
 	require.Equal(t, updatePost.CoverImage, post.CoverImage)
 
 	require.Equal(t, randomBlog.UserID, post.UserID)

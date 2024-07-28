@@ -18,6 +18,7 @@ const (
 	Middleware_UnsupportedAuthorization = "Middleware.UnsupportedAuthorization"
 	Pagination_pageError = "Pagination.pageError"
 	Pagination_sizeError = "Pagination.sizeError"
+	Post_InsertSuccess = "Post.InsertSuccess"
 	Success_Migrate = "Success.Migrate"
 	User_RegisterSuccess = "User.RegisterSuccess"
 )
