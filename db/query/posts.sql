@@ -24,6 +24,13 @@ UPDATE posts
     WHERE id = sqlc.arg(id)
 RETURNING *;
 
+-- name: GetFollowedPosts :many
+SELECT p.id, p.user_id, p.title, p.summary, p.content, p.cover_image, p.created_at, p.updated_at, p.likes 
+FROM posts p
+JOIN user_followers f ON p.user_id = f.user_id
+WHERE f.follower_id = $1
+ORDER BY p.id LIMIT $2 OFFSET $3;
+
 -- name: DeletePost :exec
 DELETE FROM posts 
 WHERE id = $1;

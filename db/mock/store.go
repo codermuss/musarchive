@@ -264,6 +264,21 @@ func (mr *MockStoreMockRecorder) GetFeaturedStory(arg0, arg1 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFeaturedStory", reflect.TypeOf((*MockStore)(nil).GetFeaturedStory), arg0, arg1)
 }
 
+// GetFollowedPosts mocks base method.
+func (m *MockStore) GetFollowedPosts(arg0 context.Context, arg1 db.GetFollowedPostsParams) ([]db.Post, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFollowedPosts", arg0, arg1)
+	ret0, _ := ret[0].([]db.Post)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFollowedPosts indicates an expected call of GetFollowedPosts.
+func (mr *MockStoreMockRecorder) GetFollowedPosts(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFollowedPosts", reflect.TypeOf((*MockStore)(nil).GetFollowedPosts), arg0, arg1)
+}
+
 // GetFollowersOfUser mocks base method.
 func (m *MockStore) GetFollowersOfUser(arg0 context.Context, arg1 int32) ([]db.GetFollowersOfUserRow, error) {
 	m.ctrl.T.Helper()

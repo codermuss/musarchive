@@ -27,6 +27,7 @@ type Querier interface {
 	GetCategory(ctx context.Context, id int32) (Category, error)
 	GetCommentsForPost(ctx context.Context, postID int32) ([]Comment, error)
 	GetFeaturedStory(ctx context.Context, id int32) (FeaturedStory, error)
+	GetFollowedPosts(ctx context.Context, arg GetFollowedPostsParams) ([]Post, error)
 	GetFollowersOfUser(ctx context.Context, userID int32) ([]GetFollowersOfUserRow, error)
 	GetFollowingUsers(ctx context.Context, followerID int32) ([]GetFollowingUsersRow, error)
 	GetOnboarding(ctx context.Context, id int32) (Onboarding, error)
