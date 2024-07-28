@@ -21,6 +21,50 @@ func (q *Queries) DeletePost(ctx context.Context, id int32) error {
 	return err
 }
 
+const getFollowedPosts = `-- name: GetFollowedPosts :many
+SELECT p.id, p.user_id, p.title, p.summary, p.content, p.cover_image, p.created_at, p.updated_at, p.likes 
+FROM posts p
+JOIN user_followers f ON p.user_id = f.user_id
+WHERE f.follower_id = $1
+ORDER BY p.id LIMIT $2 OFFSET $3
+`
+
+type GetFollowedPostsParams struct {
+	FollowerID int32 `json:"follower_id"`
+	Limit      int32 `json:"limit"`
+	Offset     int32 `json:"offset"`
+}
+
+func (q *Queries) GetFollowedPosts(ctx context.Context, arg GetFollowedPostsParams) ([]Post, error) {
+	rows, err := q.db.Query(ctx, getFollowedPosts, arg.FollowerID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Post{}
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Title,
+			&i.Summary,
+			&i.Content,
+			&i.CoverImage,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Likes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPost = `-- name: GetPost :one
 SELECT id, user_id, title, summary, content, cover_image, created_at, updated_at, likes 
 FROM posts 
