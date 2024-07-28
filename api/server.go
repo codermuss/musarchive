@@ -42,16 +42,23 @@ func (server *Server) setupRouter() {
 	// Serve the API endpoints
 	api := router.Group("/v1")
 	{
+		// Onboarding routes
 		api.GET("/onboardings", server.GetOnboardings)
-		api.POST("/register", server.RegisterUser)
-		api.POST("/login", server.LoginUser)
-
 	}
-	authRoutes := router.Group("/v1").Use(authMiddleware(server.tokenMaker))
+
+	// Authentication routes
+	authRoutes := router.Group("/v1/auth")
 	{
-		authRoutes.GET("/posts", server.GetPosts)
-		authRoutes.GET("/posts/followed", server.GetFollowedPosts)
-		authRoutes.POST("/posts/create", server.CreatePost)
+		authRoutes.POST("/register", server.RegisterUser)
+		authRoutes.POST("/login", server.LoginUser)
+	}
+
+	// Posts routes (protected by auth middleware)
+	postRoutes := router.Group("/v1/posts").Use(authMiddleware(server.tokenMaker))
+	{
+		postRoutes.GET("/index", server.GetPosts)
+		postRoutes.GET("/followed", server.GetFollowedPosts)
+		postRoutes.POST("/create", server.CreatePost)
 	}
 
 	// Serve the bundled static files
