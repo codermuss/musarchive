@@ -91,7 +91,7 @@ type Tag struct {
 type User struct {
 	ID                int32       `json:"id"`
 	Username          string      `json:"username"`
-	Password          string      `json:"password"`
+	HashedPassword    string      `json:"hashed_password"`
 	FullName          string      `json:"full_name"`
 	Email             string      `json:"email"`
 	Avatar            pgtype.Text `json:"avatar"`

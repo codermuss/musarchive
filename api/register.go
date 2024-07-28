@@ -26,6 +26,7 @@ type UserResponse struct {
 	Username          string      `json:"username"`
 	FullName          string      `json:"full_name"`
 	Email             string      `json:"email"`
+	Role              string      `json:"role"`
 	Avatar            pgtype.Text `json:"avatar"`
 	BirthDate         pgtype.Date `json:"birth_date"`
 	PasswordChangedAt time.Time   `json:"password_changed_at"`
@@ -60,14 +61,14 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 	}
 
 	arg := db.InsertUserParams{
-		Username:  req.Username,
-		Password:  hashedPassword,
-		FullName:  req.FullName,
-		Email:     req.Email,
-		Avatar:    req.Avatar,
-		BirthDate: req.BirthDate,
+		Username:       req.Username,
+		HashedPassword: hashedPassword,
+		FullName:       req.FullName,
+		Email:          req.Email,
+		Role:           util.Standard,
+		Avatar:         req.Avatar,
+		BirthDate:      req.BirthDate,
 	}
-
 	user, err := server.store.InsertUser(ctx, arg)
 
 	if err != nil {
@@ -98,6 +99,7 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		Username:          user.Username,
 		FullName:          user.FullName,
 		Email:             user.Email,
+		Role:              user.Role,
 		Avatar:            user.Avatar,
 		BirthDate:         user.BirthDate,
 		PasswordChangedAt: user.PasswordChangedAt,

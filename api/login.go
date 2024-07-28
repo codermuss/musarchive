@@ -73,7 +73,7 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 		})
 	}
 
-	err = util.CheckPassword(req.Password, user.Password)
+	err = util.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
 		BuildResponse(ctx, BaseResponse{
 			Code: http.StatusUnauthorized,

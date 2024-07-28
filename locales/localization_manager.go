@@ -6,9 +6,7 @@ import (
 
 	"sync"
 
-	"github.com/mustafayilmazdev/musarchive/util"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
-	"github.com/rs/zerolog/log"
 	"golang.org/x/text/language"
 )
 
@@ -63,7 +61,6 @@ func GetInstance() *LocalizationManager {
 // loadLanguageFiles loads the translation files for a given language
 func (lm *LocalizationManager) loadLanguageFiles(path, lang string) error {
 	_, err := lm.bundle.LoadMessageFile(path)
-	log.Info().Msgf("%s%s%s", util.LocalizationPath, lang, util.LocalizationType)
 	return err
 }
 

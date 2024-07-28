@@ -13,10 +13,10 @@ import (
 func createRandomUser(t *testing.T) User {
 
 	arg := InsertUserParams{
-		Username: util.RandomUsername(),
-		Password: util.RandomString(10),
-		FullName: util.RandomString(10),
-		Email:    util.RandomEmail(),
+		Username:       util.RandomUsername(),
+		HashedPassword: util.RandomString(10),
+		FullName:       util.RandomString(10),
+		Email:          util.RandomEmail(),
 		Avatar: pgtype.Text{
 			Valid:  true,
 			String: util.RandomImage(),
@@ -39,8 +39,8 @@ func createRandomUser(t *testing.T) User {
 	require.NotEmpty(t, arg.Email, user.Email)
 	require.Equal(t, arg.Email, arg.Email)
 
-	require.NotEmpty(t, arg.Password, user.Password)
-	require.Equal(t, arg.Password, arg.Password)
+	require.NotEmpty(t, arg.HashedPassword, user.HashedPassword)
+	require.Equal(t, arg.HashedPassword, arg.HashedPassword)
 
 	require.NotEmpty(t, arg.Avatar, user.Avatar)
 	require.Equal(t, arg.Avatar, arg.Avatar)
@@ -67,7 +67,7 @@ func TestGetUser(t *testing.T) {
 	require.Equal(t, randomUser.Username, user.Username)
 	require.Equal(t, randomUser.FullName, user.FullName)
 	require.Equal(t, randomUser.Email, user.Email)
-	require.Equal(t, randomUser.Password, user.Password)
+	require.Equal(t, randomUser.HashedPassword, user.HashedPassword)
 	require.Equal(t, randomUser.PasswordChangedAt, user.PasswordChangedAt)
 	require.Equal(t, randomUser.Avatar, user.Avatar)
 	require.Equal(t, randomUser.BirthDate, user.BirthDate)
@@ -79,11 +79,11 @@ func TestGetUser(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	randomUser := createRandomUser(t)
 	updateUser := UpdateUserParams{
-		ID:       randomUser.ID,
-		Username: util.RandomUsername(),
-		Password: util.RandomString(10),
-		FullName: util.RandomString(10),
-		Email:    util.RandomEmail(),
+		ID:             randomUser.ID,
+		Username:       util.RandomUsername(),
+		HashedPassword: util.RandomString(10),
+		FullName:       util.RandomString(10),
+		Email:          util.RandomEmail(),
 		Avatar: pgtype.Text{
 			Valid:  true,
 			String: util.RandomImage(),
@@ -102,7 +102,7 @@ func TestUpdateUser(t *testing.T) {
 	require.Equal(t, updateUser.Username, user.Username)
 	require.Equal(t, updateUser.FullName, user.FullName)
 	require.Equal(t, updateUser.Email, user.Email)
-	require.Equal(t, updateUser.Password, user.Password)
+	require.Equal(t, updateUser.HashedPassword, user.HashedPassword)
 	require.Equal(t, updateUser.Avatar, user.Avatar)
 }
 
