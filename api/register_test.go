@@ -56,7 +56,7 @@ func EqCreateUserParams(arg db.InsertUserParams, password string) gomock.Matcher
 
 // Test case for creating a user via the API
 func TestCreateUserAPI(t *testing.T) {
-	user, password := randomUser(t)
+	user, password := RandomUser(t)
 	testCases := []struct {
 		name          string
 		body          gin.H
@@ -209,7 +209,7 @@ func TestCreateUserAPI(t *testing.T) {
 }
 
 // Helper function to generate a random user for testing
-func randomUser(t *testing.T) (user db.User, password string) {
+func RandomUser(t *testing.T) (user db.User, password string) {
 	password = util.RandomString(6)
 	hashedPassword, err := util.HashPassword(password)
 	require.NoError(t, err)
