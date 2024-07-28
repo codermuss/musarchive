@@ -157,7 +157,7 @@ func TestGetPostsAPI(t *testing.T) {
 			name: "OK",
 			queryParams: map[string]string{
 				"page":   "1",
-				"size":   "5",
+				"size":   "10",
 				"locale": "en",
 			},
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
@@ -172,8 +172,26 @@ func TestGetPostsAPI(t *testing.T) {
 				arg := db.GetPostsWithFilterParams{
 					Column3: []int32{1, 2},
 					Column4: []int32{3, 4},
-					Limit:   5,
+					Limit:   10,
 					Offset:  0,
+				}
+
+				store.EXPECT().GetPostsWithFilter(gomock.Any(), gomock.Eq(arg)).Times(1).Return(posts, nil)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+				requireBodyMatchPosts(t, recorder.Body, posts)
+			},
+		},
+		{
+			name: "DEFAULT",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, int(user.ID), user.Role, time.Minute)
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				arg := db.GetPostsWithFilterParams{
+					Limit:  10,
+					Offset: 0,
 				}
 
 				store.EXPECT().GetPostsWithFilter(gomock.Any(), gomock.Eq(arg)).Times(1).Return(posts, nil)
@@ -187,7 +205,7 @@ func TestGetPostsAPI(t *testing.T) {
 			name: "InternalError",
 			queryParams: map[string]string{
 				"page":   "1",
-				"size":   "5",
+				"size":   "10",
 				"locale": "en",
 			},
 
@@ -205,15 +223,21 @@ func TestGetPostsAPI(t *testing.T) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
 			},
 		},
+
 		{
 			name: "InvalidPage",
 			queryParams: map[string]string{
-				"page":   "invalid_page",
-				"size":   "5",
+				"page":   "-1",
+				"size":   "10",
 				"locale": "en",
 			},
+
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
 				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, int(user.ID), user.Role, time.Minute)
+			},
+			body: gin.H{
+				"categories": "invalid_categories",
+				"tags":       "invalid_tags",
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetPostsWithFilter(gomock.Any(), gomock.Any()).Times(0)
@@ -226,11 +250,16 @@ func TestGetPostsAPI(t *testing.T) {
 			name: "InvalidSize",
 			queryParams: map[string]string{
 				"page":   "1",
-				"size":   "invalid_size",
+				"size":   "-10",
 				"locale": "en",
 			},
+
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
 				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, int(user.ID), user.Role, time.Minute)
+			},
+			body: gin.H{
+				"categories": "invalid_categories",
+				"tags":       "invalid_tags",
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetPostsWithFilter(gomock.Any(), gomock.Any()).Times(0)
@@ -243,7 +272,7 @@ func TestGetPostsAPI(t *testing.T) {
 			name: "InvalidBody",
 			queryParams: map[string]string{
 				"page":   "1",
-				"size":   "5",
+				"size":   "10",
 				"locale": "en",
 			},
 
@@ -281,7 +310,7 @@ func TestGetPostsAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			url := "/v1/posts"
-			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+			request, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(data))
 			require.NoError(t, err)
 
 			tc.setupAuth(t, request, server.tokenMaker)
@@ -294,11 +323,7 @@ func TestGetPostsAPI(t *testing.T) {
 				q.Add(k, v)
 			}
 			request.URL.RawQuery = q.Encode()
-
 			request.Body = io.NopCloser(bytes.NewReader(data))
-
-			server.Router.ServeHTTP(recorder, request)
-			tc.checkResponse(recorder)
 		})
 	}
 }
@@ -307,10 +332,15 @@ func requireBodyMatchPosts(t *testing.T, body *bytes.Buffer, posts []db.Post) {
 	data, err := io.ReadAll(body)
 	require.NoError(t, err)
 
-	var gotPosts []db.Post
-	err = json.Unmarshal(data, &gotPosts)
+	var response struct {
+		Code    int       `json:"code"`
+		Data    []db.Post `json:"data"`
+		Message *string   `json:"message"`
+	}
+	err = json.Unmarshal(data, &response)
 	require.NoError(t, err)
-	require.Equal(t, posts, gotPosts)
+	require.Equal(t, 200, response.Code)
+	require.Equal(t, posts, response.Data)
 }
 
 func randomPost(id int32) db.Post {
