@@ -29,5 +29,8 @@
       "UnsupportedAuthorization":"Unsupported authorization type {{.arg0}}",
       "InvalidAuthorization":"Invalid authorization header format",
       "HeaderIsNotProvided":"Authorization header is not provided"
+    },
+    "Post":{
+      "InsertSuccess":"Post created successfully!"
     }
 }

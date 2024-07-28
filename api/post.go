@@ -6,11 +6,107 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
 	localization "github.com/mustafayilmazdev/musarchive/locales"
 	"github.com/mustafayilmazdev/musarchive/token"
 	"github.com/mustafayilmazdev/musarchive/util"
 )
+
+type createPostRequest struct {
+	Title      string      `json:"title" binding:"required"`
+	Content    string      `json:"content" binding:"required"`
+	CoverImage pgtype.Text `json:"cover_image"`
+	Categories *[]int      `json:"categories"`
+	Tags       *[]int      `json:"tags"`
+}
+
+func (server *Server) CreatePost(ctx *gin.Context) {
+	locale := ctx.Query(util.Locale)
+	var req createPostRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		BuildResponse(ctx, BaseResponse{
+			Code: http.StatusBadRequest,
+			Message: ResponseMessage{
+				Type:    ERROR,
+				Content: err.Error(),
+			},
+		})
+		return
+	}
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	arg := db.InsertPostParams{
+		UserID: pgtype.Int4{
+			Valid: true,
+			Int32: int32(authPayload.UserID),
+		},
+		Title:      req.Title,
+		Content:    req.Content,
+		CoverImage: req.CoverImage,
+	}
+
+	post, err := server.store.InsertPost(ctx, arg)
+	if err != nil {
+		BuildResponse(ctx, BaseResponse{
+			Code: http.StatusInternalServerError,
+			Message: ResponseMessage{
+				Type:    ERROR,
+				Content: err.Error(),
+			},
+		})
+		return
+	}
+
+	if req.Categories != nil {
+		for _, categoryID := range *req.Categories {
+			postCategoryArg := db.InsertPostCategoryParams{
+				PostID:     post.ID,
+				CategoryID: int32(categoryID),
+			}
+			_, err = server.store.InsertPostCategory(ctx, postCategoryArg)
+			if err != nil {
+				BuildResponse(ctx, BaseResponse{
+					Code: http.StatusInternalServerError,
+					Message: ResponseMessage{
+						Type:    ERROR,
+						Content: err.Error(),
+					},
+				})
+				return
+			}
+		}
+	}
+
+	if req.Tags != nil {
+		for _, v := range *req.Tags {
+			postTag := db.InsertPostTagParams{
+				PostID: post.ID,
+				TagID:  int32(v),
+			}
+			_, err = server.store.InsertPostTag(ctx, postTag)
+
+			if err != nil {
+				BuildResponse(ctx, BaseResponse{
+					Code: http.StatusInternalServerError,
+					Message: ResponseMessage{
+						Type:    ERROR,
+						Content: err.Error(),
+					},
+				})
+				return
+			}
+		}
+	}
+
+	BuildResponse(ctx, BaseResponse{
+		Code: http.StatusOK,
+		Data: post,
+		Message: ResponseMessage{
+			Type:    SUCCESS,
+			Content: server.lm.Translate(locale, localization.Post_InsertSuccess),
+		},
+	})
+}
 
 func (server *Server) GetPosts(ctx *gin.Context) {
 	localeValue := ctx.Query(util.Locale)

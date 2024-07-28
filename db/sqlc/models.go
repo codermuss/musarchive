@@ -38,15 +38,14 @@ type Onboarding struct {
 }
 
 type Post struct {
-	ID         int32              `json:"id"`
-	UserID     pgtype.Int4        `json:"user_id"`
-	Title      string             `json:"title"`
-	Summary    string             `json:"summary"`
-	Content    string             `json:"content"`
-	CoverImage pgtype.Text        `json:"cover_image"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
-	Likes      pgtype.Int4        `json:"likes"`
+	ID         int32       `json:"id"`
+	UserID     pgtype.Int4 `json:"user_id"`
+	Title      string      `json:"title"`
+	Content    string      `json:"content"`
+	CoverImage pgtype.Text `json:"cover_image"`
+	CreatedAt  time.Time   `json:"created_at"`
+	UpdatedAt  time.Time   `json:"updated_at"`
+	Likes      int32       `json:"likes"`
 }
 
 type PostCategory struct {

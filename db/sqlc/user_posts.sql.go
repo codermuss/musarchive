@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -27,7 +28,7 @@ func (q *Queries) DeleteUserPost(ctx context.Context, arg DeleteUserPostParams) 
 }
 
 const getUserPost = `-- name: GetUserPost :one
-SELECT b.id, b.title, b.summary, b.content, b.cover_image, b.created_at, b.updated_at, b.likes 
+SELECT b.id, b.title, b.content, b.cover_image, b.created_at, b.updated_at, b.likes 
 FROM posts b
 JOIN user_posts up ON up.post_id = b.id
 WHERE up.user_id = $1 AND b.id = $2
@@ -39,14 +40,13 @@ type GetUserPostParams struct {
 }
 
 type GetUserPostRow struct {
-	ID         int32              `json:"id"`
-	Title      string             `json:"title"`
-	Summary    string             `json:"summary"`
-	Content    string             `json:"content"`
-	CoverImage pgtype.Text        `json:"cover_image"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
-	Likes      pgtype.Int4        `json:"likes"`
+	ID         int32       `json:"id"`
+	Title      string      `json:"title"`
+	Content    string      `json:"content"`
+	CoverImage pgtype.Text `json:"cover_image"`
+	CreatedAt  time.Time   `json:"created_at"`
+	UpdatedAt  time.Time   `json:"updated_at"`
+	Likes      int32       `json:"likes"`
 }
 
 func (q *Queries) GetUserPost(ctx context.Context, arg GetUserPostParams) (GetUserPostRow, error) {
@@ -55,7 +55,6 @@ func (q *Queries) GetUserPost(ctx context.Context, arg GetUserPostParams) (GetUs
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
-		&i.Summary,
 		&i.Content,
 		&i.CoverImage,
 		&i.CreatedAt,
@@ -66,21 +65,20 @@ func (q *Queries) GetUserPost(ctx context.Context, arg GetUserPostParams) (GetUs
 }
 
 const getUserPosts = `-- name: GetUserPosts :many
-SELECT b.id, b.title, b.summary, b.content, b.cover_image, b.created_at, b.updated_at, b.likes 
+SELECT b.id, b.title, b.content, b.cover_image, b.created_at, b.updated_at, b.likes 
 FROM posts b
 JOIN user_posts up ON up.post_id = b.id
 WHERE up.user_id = $1
 `
 
 type GetUserPostsRow struct {
-	ID         int32              `json:"id"`
-	Title      string             `json:"title"`
-	Summary    string             `json:"summary"`
-	Content    string             `json:"content"`
-	CoverImage pgtype.Text        `json:"cover_image"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
-	Likes      pgtype.Int4        `json:"likes"`
+	ID         int32       `json:"id"`
+	Title      string      `json:"title"`
+	Content    string      `json:"content"`
+	CoverImage pgtype.Text `json:"cover_image"`
+	CreatedAt  time.Time   `json:"created_at"`
+	UpdatedAt  time.Time   `json:"updated_at"`
+	Likes      int32       `json:"likes"`
 }
 
 func (q *Queries) GetUserPosts(ctx context.Context, userID int32) ([]GetUserPostsRow, error) {
@@ -95,7 +93,6 @@ func (q *Queries) GetUserPosts(ctx context.Context, userID int32) ([]GetUserPost
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
-			&i.Summary,
 			&i.Content,
 			&i.CoverImage,
 			&i.CreatedAt,
