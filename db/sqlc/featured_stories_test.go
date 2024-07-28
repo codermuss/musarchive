@@ -11,9 +11,9 @@ import (
 )
 
 func createRandomFeaturedStory(t *testing.T) FeaturedStory {
-	randomBlog := createRandomBlog(t)
+	randomBlog := createRandomPost(t)
 	arg := InsertFeaturedStoryParams{
-		BlogID: randomBlog.ID,
+		PostID: randomBlog.ID,
 		FeaturedDate: pgtype.Date{
 			Valid: true,
 			Time:  util.DateNow(),
@@ -23,7 +23,7 @@ func createRandomFeaturedStory(t *testing.T) FeaturedStory {
 	require.NoError(t, err)
 	require.NotEmpty(t, featuredStory)
 
-	require.Equal(t, arg.BlogID, featuredStory.BlogID)
+	require.Equal(t, arg.PostID, featuredStory.PostID)
 	require.Equal(t, arg.FeaturedDate.Time, featuredStory.FeaturedDate.Time)
 
 	return featuredStory
@@ -39,17 +39,17 @@ func TestGetFeaturedStory(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, featuredStory)
 	require.Equal(t, randomFeaturedStory.ID, featuredStory.ID)
-	require.Equal(t, randomFeaturedStory.BlogID, featuredStory.BlogID)
+	require.Equal(t, randomFeaturedStory.PostID, featuredStory.PostID)
 	require.Equal(t, randomFeaturedStory.FeaturedDate, featuredStory.FeaturedDate)
 
 }
 
 func TestUpdateFeaturedStory(t *testing.T) {
 	randomFeaturedStory := createRandomFeaturedStory(t)
-	randomBlog := createRandomBlog(t)
+	randomBlog := createRandomPost(t)
 	updateFeaturedStory := UpdateFeaturedStoryParams{
 		ID:     randomFeaturedStory.ID,
-		BlogID: randomBlog.ID,
+		PostID: randomBlog.ID,
 		FeaturedDate: pgtype.Date{
 			Valid: true,
 			Time:  util.DateYesterday(),
@@ -60,7 +60,7 @@ func TestUpdateFeaturedStory(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, featuredStory)
 	require.Equal(t, updateFeaturedStory.ID, featuredStory.ID)
-	require.Equal(t, updateFeaturedStory.BlogID, featuredStory.BlogID)
+	require.Equal(t, updateFeaturedStory.PostID, featuredStory.PostID)
 	require.Equal(t, updateFeaturedStory.FeaturedDate, featuredStory.FeaturedDate)
 
 	require.NotEqual(t, randomFeaturedStory.FeaturedDate, featuredStory.FeaturedDate)

@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomBlog(t *testing.T) Blog {
+func createRandomPost(t *testing.T) Post {
 	user := createRandomUser(t)
-	arg := InsertBlogParams{
+	arg := InsertPostParams{
 		UserID: pgtype.Int4{
 			Valid: true,
 			Int32: user.ID,
@@ -25,7 +25,7 @@ func createRandomBlog(t *testing.T) Blog {
 			String: util.RandomImage(),
 		},
 	}
-	blog, err := testStore.InsertBlog(context.Background(), arg)
+	blog, err := testStore.InsertPost(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, blog)
 
@@ -41,12 +41,12 @@ func createRandomBlog(t *testing.T) Blog {
 }
 
 func TestCreateBlog(t *testing.T) {
-	createRandomBlog(t)
+	createRandomPost(t)
 }
 
 func TestGetBlog(t *testing.T) {
-	randomBlog := createRandomBlog(t)
-	blog, err := testStore.GetBlog(context.Background(), randomBlog.ID)
+	randomBlog := createRandomPost(t)
+	blog, err := testStore.GetPost(context.Background(), randomBlog.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, blog)
 
@@ -60,16 +60,16 @@ func TestGetBlog(t *testing.T) {
 
 }
 
-func TestUpdateBlogTitle(t *testing.T) {
-	randomBlog := createRandomBlog(t)
-	updateBlog := UpdateBlogParams{
+func TestUpdatePostTitle(t *testing.T) {
+	randomBlog := createRandomPost(t)
+	updatePost := UpdatePostParams{
 		ID: randomBlog.ID,
 		Title: pgtype.Text{
 			Valid:  true,
 			String: util.RandomTitle(),
 		},
 	}
-	blog, err := testStore.UpdateBlog(context.Background(), updateBlog)
+	blog, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
 	require.NotEmpty(t, blog)
 	require.Equal(t, randomBlog.UserID, blog.UserID)
@@ -81,16 +81,16 @@ func TestUpdateBlogTitle(t *testing.T) {
 	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
 }
 
-func TestUpdateBlogSummary(t *testing.T) {
-	randomBlog := createRandomBlog(t)
-	updateBlog := UpdateBlogParams{
+func TestUpdatePostSummary(t *testing.T) {
+	randomBlog := createRandomPost(t)
+	updatePost := UpdatePostParams{
 		ID: randomBlog.ID,
 		Summary: pgtype.Text{
 			Valid:  true,
 			String: util.RandomString(10),
 		},
 	}
-	blog, err := testStore.UpdateBlog(context.Background(), updateBlog)
+	blog, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
 	require.NotEmpty(t, blog)
 	require.Equal(t, randomBlog.UserID, blog.UserID)
@@ -102,21 +102,21 @@ func TestUpdateBlogSummary(t *testing.T) {
 	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
 }
 
-func TestUpdateBlogContent(t *testing.T) {
-	randomBlog := createRandomBlog(t)
-	updateBlog := UpdateBlogParams{
+func TestUpdatePostContent(t *testing.T) {
+	randomBlog := createRandomPost(t)
+	updatePost := UpdatePostParams{
 		ID: randomBlog.ID,
 		Content: pgtype.Text{
 			Valid:  true,
 			String: util.RandomDescription(),
 		},
 	}
-	blog, err := testStore.UpdateBlog(context.Background(), updateBlog)
+	blog, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
 	require.NotEmpty(t, blog)
 
 	require.NotEqual(t, randomBlog.Content, blog.Content)
-	require.Equal(t, updateBlog.Content.String, blog.Content)
+	require.Equal(t, updatePost.Content.String, blog.Content)
 
 	require.Equal(t, randomBlog.UserID, blog.UserID)
 	require.Equal(t, randomBlog.Title, blog.Title)
@@ -126,21 +126,21 @@ func TestUpdateBlogContent(t *testing.T) {
 	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
 }
 
-func TestUpdateBlogCover(t *testing.T) {
-	randomBlog := createRandomBlog(t)
-	updateBlog := UpdateBlogParams{
+func TestUpdatePostCover(t *testing.T) {
+	randomBlog := createRandomPost(t)
+	updatePost := UpdatePostParams{
 		ID: randomBlog.ID,
 		CoverImage: pgtype.Text{
 			Valid:  true,
 			String: util.RandomImage() + "/update",
 		},
 	}
-	blog, err := testStore.UpdateBlog(context.Background(), updateBlog)
+	blog, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
 	require.NotEmpty(t, blog)
 
 	require.NotEqual(t, randomBlog.CoverImage, blog.CoverImage)
-	require.Equal(t, updateBlog.CoverImage, blog.CoverImage)
+	require.Equal(t, updatePost.CoverImage, blog.CoverImage)
 
 	require.Equal(t, randomBlog.UserID, blog.UserID)
 	require.Equal(t, randomBlog.Title, blog.Title)
@@ -150,9 +150,9 @@ func TestUpdateBlogCover(t *testing.T) {
 	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
 }
 
-func TestUpdateBlogAll(t *testing.T) {
-	randomBlog := createRandomBlog(t)
-	updateBlog := UpdateBlogParams{
+func TestUpdatePostAll(t *testing.T) {
+	randomBlog := createRandomPost(t)
+	updatePost := UpdatePostParams{
 		ID: randomBlog.ID,
 		Title: pgtype.Text{
 			Valid:  true,
@@ -175,7 +175,7 @@ func TestUpdateBlogAll(t *testing.T) {
 			String: util.RandomImage() + "/update",
 		},
 	}
-	blog, err := testStore.UpdateBlog(context.Background(), updateBlog)
+	blog, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
 	require.NotEmpty(t, blog)
 
@@ -185,11 +185,11 @@ func TestUpdateBlogAll(t *testing.T) {
 	require.NotEqual(t, randomBlog.Summary, blog.Summary)
 	require.NotEqual(t, randomBlog.Content, blog.Content)
 
-	require.Equal(t, updateBlog.Title.String, blog.Title)
-	require.Equal(t, updateBlog.Summary.String, blog.Summary)
-	require.Equal(t, updateBlog.Content.String, blog.Content)
-	require.Equal(t, updateBlog.Likes, blog.Likes)
-	require.Equal(t, updateBlog.CoverImage, blog.CoverImage)
+	require.Equal(t, updatePost.Title.String, blog.Title)
+	require.Equal(t, updatePost.Summary.String, blog.Summary)
+	require.Equal(t, updatePost.Content.String, blog.Content)
+	require.Equal(t, updatePost.Likes, blog.Likes)
+	require.Equal(t, updatePost.CoverImage, blog.CoverImage)
 
 	require.Equal(t, randomBlog.UserID, blog.UserID)
 	require.Equal(t, randomBlog.CreatedAt, blog.CreatedAt)

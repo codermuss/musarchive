@@ -24,7 +24,7 @@ func createRandomUserProfile(t *testing.T) Profile {
 
 	require.Equal(t, arg.UserID, profile.UserID)
 	require.Equal(t, arg.Bio, profile.Bio)
-	require.Equal(t, arg.BlogCount, profile.BlogCount)
+	require.Equal(t, arg.PostCount, profile.PostCount)
 	require.Equal(t, arg.FollowerCount, profile.FollowerCount)
 	require.Equal(t, arg.LikeCount, profile.LikeCount)
 
@@ -42,7 +42,7 @@ func TestGetProfile(t *testing.T) {
 	require.NotEmpty(t, profile)
 	require.Equal(t, randomProfile.UserID, profile.UserID)
 	require.Equal(t, randomProfile.Bio, profile.Bio)
-	require.Equal(t, randomProfile.BlogCount, profile.BlogCount)
+	require.Equal(t, randomProfile.PostCount, profile.PostCount)
 	require.Equal(t, randomProfile.FollowerCount, profile.FollowerCount)
 	require.Equal(t, randomProfile.LikeCount, profile.LikeCount)
 
@@ -65,16 +65,16 @@ func TestUpdateProfileBio(t *testing.T) {
 
 	require.Equal(t, randomProfile.UserID, profile.UserID)
 	require.NotEqual(t, randomProfile.Bio, profile.Bio)
-	require.Equal(t, randomProfile.BlogCount, profile.BlogCount)
+	require.Equal(t, randomProfile.PostCount, profile.PostCount)
 	require.Equal(t, randomProfile.FollowerCount, profile.FollowerCount)
 	require.Equal(t, randomProfile.LikeCount, profile.LikeCount)
 }
 
-func TestUpdateProfileBlogCount(t *testing.T) {
+func TestUpdateProfilePostCount(t *testing.T) {
 	randomProfile := createRandomUserProfile(t)
 	updateProfile := UpdateProfileParams{
 		UserID: randomProfile.UserID,
-		BlogCount: pgtype.Int4{
+		PostCount: pgtype.Int4{
 			Valid: true,
 			Int32: util.RandomLike(),
 		},
@@ -87,7 +87,7 @@ func TestUpdateProfileBlogCount(t *testing.T) {
 
 	require.Equal(t, randomProfile.UserID, profile.UserID)
 	require.Equal(t, randomProfile.Bio, profile.Bio)
-	require.NotEqual(t, randomProfile.BlogCount, profile.BlogCount)
+	require.NotEqual(t, randomProfile.PostCount, profile.PostCount)
 	require.Equal(t, randomProfile.FollowerCount, profile.FollowerCount)
 	require.Equal(t, randomProfile.LikeCount, profile.LikeCount)
 }
@@ -109,7 +109,7 @@ func TestUpdateProfileFollowerCount(t *testing.T) {
 
 	require.Equal(t, randomProfile.UserID, profile.UserID)
 	require.Equal(t, randomProfile.Bio, profile.Bio)
-	require.Equal(t, randomProfile.BlogCount, profile.BlogCount)
+	require.Equal(t, randomProfile.PostCount, profile.PostCount)
 	require.NotEqual(t, randomProfile.FollowerCount, profile.FollowerCount)
 	require.Equal(t, randomProfile.LikeCount, profile.LikeCount)
 }
@@ -131,7 +131,7 @@ func TestUpdateProfileLikeCount(t *testing.T) {
 
 	require.Equal(t, randomProfile.UserID, profile.UserID)
 	require.Equal(t, randomProfile.Bio, profile.Bio)
-	require.Equal(t, randomProfile.BlogCount, profile.BlogCount)
+	require.Equal(t, randomProfile.PostCount, profile.PostCount)
 	require.Equal(t, randomProfile.FollowerCount, profile.FollowerCount)
 	require.NotEqual(t, randomProfile.LikeCount, profile.LikeCount)
 }
@@ -144,7 +144,7 @@ func TestUpdateProfileAll(t *testing.T) {
 			Valid:  true,
 			String: util.RandomDescription(),
 		},
-		BlogCount: pgtype.Int4{
+		PostCount: pgtype.Int4{
 			Valid: true,
 			Int32: util.RandomLike(),
 		},
@@ -165,12 +165,12 @@ func TestUpdateProfileAll(t *testing.T) {
 
 	require.Equal(t, randomProfile.UserID, profile.UserID)
 	require.NotEqual(t, randomProfile.Bio, profile.Bio)
-	require.NotEqual(t, randomProfile.BlogCount, profile.BlogCount)
+	require.NotEqual(t, randomProfile.PostCount, profile.PostCount)
 	require.NotEqual(t, randomProfile.FollowerCount, profile.FollowerCount)
 	require.NotEqual(t, randomProfile.LikeCount, profile.LikeCount)
 
 	require.Equal(t, updateProfile.Bio, profile.Bio)
-	require.Equal(t, updateProfile.BlogCount, profile.BlogCount)
+	require.Equal(t, updateProfile.PostCount, profile.PostCount)
 	require.Equal(t, updateProfile.FollowerCount, profile.FollowerCount)
 	require.Equal(t, updateProfile.LikeCount, profile.LikeCount)
 }

@@ -50,12 +50,12 @@ func (server *Server) GetBlogs(ctx *gin.Context) {
 
 	}
 
-	arg := db.GetBlogsParams{
+	arg := db.GetPostsParams{
 		Limit:  int32(size),
 		Offset: int32((page - 1) * size),
 	}
 
-	blogs, err := server.store.GetBlogs(ctx, arg)
+	blogs, err := server.store.GetPosts(ctx, arg)
 	if err != nil {
 		BuildResponse(ctx, BaseResponse{
 			Code: http.StatusInternalServerError,
