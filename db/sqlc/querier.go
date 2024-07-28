@@ -33,6 +33,7 @@ type Querier interface {
 	GetOnboarding(ctx context.Context, id int32) (Onboarding, error)
 	GetPost(ctx context.Context, id int32) (Post, error)
 	GetPosts(ctx context.Context, arg GetPostsParams) ([]Post, error)
+	GetPostsWithFilter(ctx context.Context, arg GetPostsWithFilterParams) ([]Post, error)
 	GetProfile(ctx context.Context, userID int32) (Profile, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTag(ctx context.Context, id int32) (Tag, error)

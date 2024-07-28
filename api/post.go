@@ -108,6 +108,11 @@ func (server *Server) CreatePost(ctx *gin.Context) {
 	})
 }
 
+type filteredPostsRequest struct {
+	Categories []int32 `json:"categories"`
+	Tags       []int32 `json:"tags"`
+}
+
 func (server *Server) GetPosts(ctx *gin.Context) {
 	localeValue := ctx.Query(util.Locale)
 	pageStr := ctx.Query(util.Page)
@@ -146,13 +151,27 @@ func (server *Server) GetPosts(ctx *gin.Context) {
 		}
 
 	}
-
-	arg := db.GetPostsParams{
-		Limit:  int32(size),
-		Offset: int32((page - 1) * size),
+	var req filteredPostsRequest
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		BuildResponse(ctx, BaseResponse{
+			Code: http.StatusBadRequest,
+			Message: ResponseMessage{
+				Type:    ERROR,
+				Content: err.Error(),
+			},
+		})
+		return
 	}
 
-	blogs, err := server.store.GetPosts(ctx, arg)
+	arg := db.GetPostsWithFilterParams{
+		Column3: req.Categories,
+		Column4: req.Tags,
+		Limit:   int32(size),
+		Offset:  int32((page - 1) * size),
+	}
+
+	blogs, err := server.store.GetPostsWithFilter(ctx, arg)
 	if err != nil {
 		BuildResponse(ctx, BaseResponse{
 			Code: http.StatusInternalServerError,
