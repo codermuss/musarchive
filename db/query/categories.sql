@@ -9,6 +9,11 @@ SELECT id, name
 FROM categories 
 WHERE id = $1;
 
+
+-- name: GetCategories :many
+SELECT id, name 
+FROM categories;
+
 -- name: UpdateCategory :one
 UPDATE categories 
 SET name = $1

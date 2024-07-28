@@ -23,6 +23,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int32) error
 	DeleteUserFollower(ctx context.Context, arg DeleteUserFollowerParams) error
 	DeleteUserPost(ctx context.Context, arg DeleteUserPostParams) error
+	GetCategories(ctx context.Context) ([]Category, error)
 	GetCategoriesForPost(ctx context.Context, postID int32) ([]Category, error)
 	GetCategory(ctx context.Context, id int32) (Category, error)
 	GetCommentsForPost(ctx context.Context, postID int32) ([]Comment, error)

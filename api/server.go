@@ -60,6 +60,10 @@ func (server *Server) setupRouter() {
 		postRoutes.GET("/followed", server.GetFollowedPosts)
 		postRoutes.POST("/create", server.CreatePost)
 	}
+	categoryRoutes := router.Group("/v1/categories").Use(authMiddleware(server.tokenMaker))
+	{
+		categoryRoutes.GET("/index", server.GetCategories)
+	}
 
 	// Serve the bundled static files
 	statikFS, err := fs.New()
