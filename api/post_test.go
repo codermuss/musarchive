@@ -309,7 +309,7 @@ func TestGetPostsAPI(t *testing.T) {
 			data, err := json.Marshal(tc.body)
 			require.NoError(t, err)
 
-			url := "/v1/posts"
+			url := "/v1/posts/index"
 			request, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(data))
 			require.NoError(t, err)
 
