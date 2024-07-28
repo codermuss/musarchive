@@ -21,15 +21,15 @@ func (q *Queries) DeleteComment(ctx context.Context, id int32) error {
 	return err
 }
 
-const getCommentsForBlog = `-- name: GetCommentsForBlog :many
-SELECT id, blog_id, user_id, content, created_at 
+const getCommentsForPost = `-- name: GetCommentsForPost :many
+SELECT id, post_id, user_id, content, created_at 
 FROM comments 
-WHERE blog_id = $1 
+WHERE post_id = $1 
 ORDER BY created_at DESC
 `
 
-func (q *Queries) GetCommentsForBlog(ctx context.Context, blogID int32) ([]Comment, error) {
-	rows, err := q.db.Query(ctx, getCommentsForBlog, blogID)
+func (q *Queries) GetCommentsForPost(ctx context.Context, postID int32) ([]Comment, error) {
+	rows, err := q.db.Query(ctx, getCommentsForPost, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (q *Queries) GetCommentsForBlog(ctx context.Context, blogID int32) ([]Comme
 		var i Comment
 		if err := rows.Scan(
 			&i.ID,
-			&i.BlogID,
+			&i.PostID,
 			&i.UserID,
 			&i.Content,
 			&i.CreatedAt,
@@ -55,13 +55,13 @@ func (q *Queries) GetCommentsForBlog(ctx context.Context, blogID int32) ([]Comme
 }
 
 const insertComment = `-- name: InsertComment :one
-INSERT INTO comments (blog_id, user_id, content, created_at) 
+INSERT INTO comments (post_id, user_id, content, created_at) 
 VALUES ($1, $2, $3, $4) 
-RETURNING id, blog_id, user_id, content, created_at
+RETURNING id, post_id, user_id, content, created_at
 `
 
 type InsertCommentParams struct {
-	BlogID    int32              `json:"blog_id"`
+	PostID    int32              `json:"post_id"`
 	UserID    int32              `json:"user_id"`
 	Content   string             `json:"content"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
@@ -69,7 +69,7 @@ type InsertCommentParams struct {
 
 func (q *Queries) InsertComment(ctx context.Context, arg InsertCommentParams) (Comment, error) {
 	row := q.db.QueryRow(ctx, insertComment,
-		arg.BlogID,
+		arg.PostID,
 		arg.UserID,
 		arg.Content,
 		arg.CreatedAt,
@@ -77,7 +77,7 @@ func (q *Queries) InsertComment(ctx context.Context, arg InsertCommentParams) (C
 	var i Comment
 	err := row.Scan(
 		&i.ID,
-		&i.BlogID,
+		&i.PostID,
 		&i.UserID,
 		&i.Content,
 		&i.CreatedAt,

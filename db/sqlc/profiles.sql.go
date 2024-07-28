@@ -22,7 +22,7 @@ func (q *Queries) DeleteProfile(ctx context.Context, userID int32) error {
 }
 
 const getProfile = `-- name: GetProfile :one
-SELECT user_id, bio, blog_count, like_count, follower_count 
+SELECT user_id, bio, post_count, like_count, follower_count 
 FROM profiles 
 WHERE user_id = $1
 `
@@ -33,7 +33,7 @@ func (q *Queries) GetProfile(ctx context.Context, userID int32) (Profile, error)
 	err := row.Scan(
 		&i.UserID,
 		&i.Bio,
-		&i.BlogCount,
+		&i.PostCount,
 		&i.LikeCount,
 		&i.FollowerCount,
 	)
@@ -41,15 +41,15 @@ func (q *Queries) GetProfile(ctx context.Context, userID int32) (Profile, error)
 }
 
 const insertProfile = `-- name: InsertProfile :one
-INSERT INTO profiles (user_id, bio, blog_count, like_count, follower_count) 
+INSERT INTO profiles (user_id, bio, post_count, like_count, follower_count) 
 VALUES ($1, $2, $3, $4, $5) 
-RETURNING user_id, bio, blog_count, like_count, follower_count
+RETURNING user_id, bio, post_count, like_count, follower_count
 `
 
 type InsertProfileParams struct {
 	UserID        int32       `json:"user_id"`
 	Bio           pgtype.Text `json:"bio"`
-	BlogCount     pgtype.Int4 `json:"blog_count"`
+	PostCount     pgtype.Int4 `json:"post_count"`
 	LikeCount     pgtype.Int4 `json:"like_count"`
 	FollowerCount pgtype.Int4 `json:"follower_count"`
 }
@@ -58,7 +58,7 @@ func (q *Queries) InsertProfile(ctx context.Context, arg InsertProfileParams) (P
 	row := q.db.QueryRow(ctx, insertProfile,
 		arg.UserID,
 		arg.Bio,
-		arg.BlogCount,
+		arg.PostCount,
 		arg.LikeCount,
 		arg.FollowerCount,
 	)
@@ -66,7 +66,7 @@ func (q *Queries) InsertProfile(ctx context.Context, arg InsertProfileParams) (P
 	err := row.Scan(
 		&i.UserID,
 		&i.Bio,
-		&i.BlogCount,
+		&i.PostCount,
 		&i.LikeCount,
 		&i.FollowerCount,
 	)
@@ -77,16 +77,16 @@ const updateProfile = `-- name: UpdateProfile :one
 UPDATE profiles 
     SET 
     bio = COALESCE($1,bio), 
-    blog_count = COALESCE($2,blog_count), 
+    post_count = COALESCE($2,post_count), 
     like_count = COALESCE($3,like_count),
     follower_count = COALESCE($4,follower_count)
     WHERE user_id = $5
-RETURNING user_id, bio, blog_count, like_count, follower_count
+RETURNING user_id, bio, post_count, like_count, follower_count
 `
 
 type UpdateProfileParams struct {
 	Bio           pgtype.Text `json:"bio"`
-	BlogCount     pgtype.Int4 `json:"blog_count"`
+	PostCount     pgtype.Int4 `json:"post_count"`
 	LikeCount     pgtype.Int4 `json:"like_count"`
 	FollowerCount pgtype.Int4 `json:"follower_count"`
 	UserID        int32       `json:"user_id"`
@@ -95,7 +95,7 @@ type UpdateProfileParams struct {
 func (q *Queries) UpdateProfile(ctx context.Context, arg UpdateProfileParams) (Profile, error) {
 	row := q.db.QueryRow(ctx, updateProfile,
 		arg.Bio,
-		arg.BlogCount,
+		arg.PostCount,
 		arg.LikeCount,
 		arg.FollowerCount,
 		arg.UserID,
@@ -104,7 +104,7 @@ func (q *Queries) UpdateProfile(ctx context.Context, arg UpdateProfileParams) (P
 	err := row.Scan(
 		&i.UserID,
 		&i.Bio,
-		&i.BlogCount,
+		&i.PostCount,
 		&i.LikeCount,
 		&i.FollowerCount,
 	)

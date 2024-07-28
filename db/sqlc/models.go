@@ -11,7 +11,33 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Blog struct {
+type Category struct {
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+}
+
+type Comment struct {
+	ID        int32              `json:"id"`
+	PostID    int32              `json:"post_id"`
+	UserID    int32              `json:"user_id"`
+	Content   string             `json:"content"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+}
+
+type FeaturedStory struct {
+	ID           int32       `json:"id"`
+	PostID       int32       `json:"post_id"`
+	FeaturedDate pgtype.Date `json:"featured_date"`
+}
+
+type Onboarding struct {
+	ID          int32       `json:"id"`
+	Image       pgtype.Text `json:"image"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+}
+
+type Post struct {
 	ID         int32              `json:"id"`
 	UserID     pgtype.Int4        `json:"user_id"`
 	Title      string             `json:"title"`
@@ -23,51 +49,25 @@ type Blog struct {
 	Likes      pgtype.Int4        `json:"likes"`
 }
 
-type BlogCategory struct {
-	BlogID     int32 `json:"blog_id"`
+type PostCategory struct {
+	PostID     int32 `json:"post_id"`
 	CategoryID int32 `json:"category_id"`
 }
 
-type BlogLike struct {
-	BlogID int32 `json:"blog_id"`
+type PostLike struct {
+	PostID int32 `json:"post_id"`
 	UserID int32 `json:"user_id"`
 }
 
-type BlogTag struct {
-	BlogID int32 `json:"blog_id"`
+type PostTag struct {
+	PostID int32 `json:"post_id"`
 	TagID  int32 `json:"tag_id"`
-}
-
-type Category struct {
-	ID   int32  `json:"id"`
-	Name string `json:"name"`
-}
-
-type Comment struct {
-	ID        int32              `json:"id"`
-	BlogID    int32              `json:"blog_id"`
-	UserID    int32              `json:"user_id"`
-	Content   string             `json:"content"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-}
-
-type FeaturedStory struct {
-	ID           int32       `json:"id"`
-	BlogID       int32       `json:"blog_id"`
-	FeaturedDate pgtype.Date `json:"featured_date"`
-}
-
-type Onboarding struct {
-	ID          int32       `json:"id"`
-	Image       pgtype.Text `json:"image"`
-	Title       string      `json:"title"`
-	Description string      `json:"description"`
 }
 
 type Profile struct {
 	UserID        int32       `json:"user_id"`
 	Bio           pgtype.Text `json:"bio"`
-	BlogCount     pgtype.Int4 `json:"blog_count"`
+	PostCount     pgtype.Int4 `json:"post_count"`
 	LikeCount     pgtype.Int4 `json:"like_count"`
 	FollowerCount pgtype.Int4 `json:"follower_count"`
 }
@@ -108,5 +108,5 @@ type UserFollower struct {
 
 type UserPost struct {
 	UserID int32 `json:"user_id"`
-	BlogID int32 `json:"blog_id"`
+	PostID int32 `json:"post_id"`
 }

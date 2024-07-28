@@ -1,20 +1,20 @@
--- name: InsertBlog :one
-INSERT INTO blogs (user_id, title, summary, content, cover_image, created_at, updated_at, likes) 
+-- name: InsertPost :one
+INSERT INTO posts (user_id, title, summary, content, cover_image, created_at, updated_at, likes) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
 RETURNING *;
 
--- name: GetBlog :one
+-- name: GetPost :one
 SELECT id, user_id, title, summary, content, cover_image, created_at, updated_at, likes 
-FROM blogs 
+FROM posts 
 WHERE id = $1;
 
--- name: GetBlogs :many
+-- name: GetPosts :many
 SELECT id, user_id, title, summary, content, cover_image, created_at, updated_at, likes 
-FROM blogs 
+FROM posts 
 ORDER BY id LIMIT $1 OFFSET $2;
 
--- name: UpdateBlog :one
-UPDATE blogs 
+-- name: UpdatePost :one
+UPDATE posts 
     SET
     title = COALESCE(sqlc.narg(title),title), 
     summary = COALESCE(sqlc.narg(summary),summary), 
@@ -24,6 +24,6 @@ UPDATE blogs
     WHERE id = sqlc.arg(id)
 RETURNING *;
 
--- name: DeleteBlog :exec
-DELETE FROM blogs 
+-- name: DeletePost :exec
+DELETE FROM posts 
 WHERE id = $1;

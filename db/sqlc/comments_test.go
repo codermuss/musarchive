@@ -9,16 +9,16 @@ import (
 )
 
 func createRandomComment(t *testing.T) Comment {
-	randomBlog := createRandomBlog(t)
+	randomBlog := createRandomPost(t)
 	arg := InsertCommentParams{
-		BlogID:  randomBlog.ID,
+		PostID:  randomBlog.ID,
 		UserID:  randomBlog.UserID.Int32,
 		Content: util.RandomDescription(),
 	}
 	comment, err := testStore.InsertComment(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, comment)
-	require.Equal(t, comment.BlogID, arg.BlogID)
+	require.Equal(t, comment.PostID, arg.PostID)
 	require.Equal(t, comment.UserID, arg.UserID)
 	require.Equal(t, comment.Content, arg.Content)
 
@@ -31,7 +31,7 @@ func TestCreateComment(t *testing.T) {
 
 func TestGetComments(t *testing.T) {
 	randomComment := createRandomComment(t)
-	comments, err := testStore.GetCommentsForBlog(context.Background(), randomComment.BlogID)
+	comments, err := testStore.GetCommentsForPost(context.Background(), randomComment.PostID)
 	require.NoError(t, err)
 	require.NotEmpty(t, comments)
 }
@@ -40,6 +40,6 @@ func TestDeleteComment(t *testing.T) {
 	randomComment := createRandomComment(t)
 	err := testStore.DeleteComment(context.Background(), randomComment.ID)
 	require.NoError(t, err)
-	_, err = testStore.GetCommentsForBlog(context.Background(), randomComment.ID)
+	_, err = testStore.GetCommentsForPost(context.Background(), randomComment.ID)
 	require.NoError(t, err)
 }

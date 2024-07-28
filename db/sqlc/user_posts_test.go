@@ -7,43 +7,43 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomPost(t *testing.T) UserPost {
-	randomBlog := createRandomBlog(t)
+func createRandomUserPost(t *testing.T) UserPost {
+	randomPost := createRandomPost(t)
 	arg := InsertUserPostParams{
-		UserID: randomBlog.UserID.Int32,
-		BlogID: randomBlog.ID,
+		UserID: randomPost.UserID.Int32,
+		PostID: randomPost.ID,
 	}
 	userPost, err := testStore.InsertUserPost(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, userPost)
 
 	require.Equal(t, arg.UserID, userPost.UserID)
-	require.Equal(t, arg.BlogID, userPost.BlogID)
+	require.Equal(t, arg.PostID, userPost.PostID)
 
 	return userPost
 }
 
 func TestCreateUserPost(t *testing.T) {
-	createRandomPost(t)
+	createRandomUserPost(t)
 }
 
 func TestGetUserPost(t *testing.T) {
-	randomUserPost := createRandomPost(t)
-	userPost, err := testStore.GetUserBlogs(context.Background(), randomUserPost.UserID)
+	randomUserPost := createRandomUserPost(t)
+	userPost, err := testStore.GetUserPosts(context.Background(), randomUserPost.UserID)
 	require.NoError(t, err)
 	require.NotEmpty(t, userPost)
 }
 
 func TestDeleteUserPost(t *testing.T) {
-	randomUserPost := createRandomPost(t)
+	randomUserPost := createRandomUserPost(t)
 	err := testStore.DeleteUserPost(context.Background(), DeleteUserPostParams{
 		UserID: randomUserPost.UserID,
-		BlogID: randomUserPost.BlogID,
+		PostID: randomUserPost.PostID,
 	})
 	require.NoError(t, err)
-	userPost, err := testStore.GetUserBlog(context.Background(), GetUserBlogParams{
+	userPost, err := testStore.GetUserPost(context.Background(), GetUserPostParams{
 		UserID: randomUserPost.UserID,
-		ID:     randomUserPost.BlogID,
+		ID:     randomUserPost.PostID,
 	})
 	require.Error(t, err)
 	require.EqualError(t, err, ErrRecordNotFound.Error())
