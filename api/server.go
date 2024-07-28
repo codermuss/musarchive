@@ -50,8 +50,8 @@ func (server *Server) setupRouter() {
 	authRoutes := router.Group("/v1").Use(authMiddleware(server.tokenMaker))
 	{
 		authRoutes.GET("/posts", server.GetPosts)
-		authRoutes.GET("/followed_posts", server.GetFollowedPosts)
-		authRoutes.POST("/create_post", server.CreatePost)
+		authRoutes.GET("/posts/followed", server.GetFollowedPosts)
+		authRoutes.POST("/posts/create", server.CreatePost)
 	}
 
 	// Serve the bundled static files
