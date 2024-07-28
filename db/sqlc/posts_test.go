@@ -25,19 +25,19 @@ func createRandomPost(t *testing.T) Post {
 			String: util.RandomImage(),
 		},
 	}
-	blog, err := testStore.InsertPost(context.Background(), arg)
+	post, err := testStore.InsertPost(context.Background(), arg)
 	require.NoError(t, err)
-	require.NotEmpty(t, blog)
+	require.NotEmpty(t, post)
 
-	require.Equal(t, arg.UserID, blog.UserID)
-	require.Equal(t, arg.Title, blog.Title)
-	require.Equal(t, arg.Summary, blog.Summary)
-	require.Equal(t, arg.Content, blog.Content)
-	require.Equal(t, arg.Likes, blog.Likes)
-	require.Equal(t, arg.CreatedAt, blog.CreatedAt)
-	require.Equal(t, arg.UpdatedAt, blog.UpdatedAt)
+	require.Equal(t, arg.UserID, post.UserID)
+	require.Equal(t, arg.Title, post.Title)
+	require.Equal(t, arg.Summary, post.Summary)
+	require.Equal(t, arg.Content, post.Content)
+	require.Equal(t, arg.Likes, post.Likes)
+	require.Equal(t, arg.CreatedAt, post.CreatedAt)
+	require.Equal(t, arg.UpdatedAt, post.UpdatedAt)
 
-	return blog
+	return post
 }
 
 func TestCreateBlog(t *testing.T) {
@@ -46,17 +46,17 @@ func TestCreateBlog(t *testing.T) {
 
 func TestGetBlog(t *testing.T) {
 	randomBlog := createRandomPost(t)
-	blog, err := testStore.GetPost(context.Background(), randomBlog.ID)
+	post, err := testStore.GetPost(context.Background(), randomBlog.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, blog)
+	require.NotEmpty(t, post)
 
-	require.Equal(t, randomBlog.UserID, blog.UserID)
-	require.Equal(t, randomBlog.Title, blog.Title)
-	require.Equal(t, randomBlog.Summary, blog.Summary)
-	require.Equal(t, randomBlog.Content, blog.Content)
-	require.Equal(t, randomBlog.Likes, blog.Likes)
-	require.Equal(t, randomBlog.CreatedAt, blog.CreatedAt)
-	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
+	require.Equal(t, randomBlog.UserID, post.UserID)
+	require.Equal(t, randomBlog.Title, post.Title)
+	require.Equal(t, randomBlog.Summary, post.Summary)
+	require.Equal(t, randomBlog.Content, post.Content)
+	require.Equal(t, randomBlog.Likes, post.Likes)
+	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
+	require.Equal(t, randomBlog.UpdatedAt, post.UpdatedAt)
 
 }
 
@@ -69,16 +69,16 @@ func TestUpdatePostTitle(t *testing.T) {
 			String: util.RandomTitle(),
 		},
 	}
-	blog, err := testStore.UpdatePost(context.Background(), updatePost)
+	post, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
-	require.NotEmpty(t, blog)
-	require.Equal(t, randomBlog.UserID, blog.UserID)
-	require.NotEqual(t, randomBlog.Title, blog.Title)
-	require.Equal(t, randomBlog.Summary, blog.Summary)
-	require.Equal(t, randomBlog.Content, blog.Content)
-	require.Equal(t, randomBlog.Likes, blog.Likes)
-	require.Equal(t, randomBlog.CreatedAt, blog.CreatedAt)
-	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
+	require.NotEmpty(t, post)
+	require.Equal(t, randomBlog.UserID, post.UserID)
+	require.NotEqual(t, randomBlog.Title, post.Title)
+	require.Equal(t, randomBlog.Summary, post.Summary)
+	require.Equal(t, randomBlog.Content, post.Content)
+	require.Equal(t, randomBlog.Likes, post.Likes)
+	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
+	require.Equal(t, randomBlog.UpdatedAt, post.UpdatedAt)
 }
 
 func TestUpdatePostSummary(t *testing.T) {
@@ -90,16 +90,16 @@ func TestUpdatePostSummary(t *testing.T) {
 			String: util.RandomString(10),
 		},
 	}
-	blog, err := testStore.UpdatePost(context.Background(), updatePost)
+	post, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
-	require.NotEmpty(t, blog)
-	require.Equal(t, randomBlog.UserID, blog.UserID)
-	require.Equal(t, randomBlog.Title, blog.Title)
-	require.NotEqual(t, randomBlog.Summary, blog.Summary)
-	require.Equal(t, randomBlog.Content, blog.Content)
-	require.Equal(t, randomBlog.Likes, blog.Likes)
-	require.Equal(t, randomBlog.CreatedAt, blog.CreatedAt)
-	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
+	require.NotEmpty(t, post)
+	require.Equal(t, randomBlog.UserID, post.UserID)
+	require.Equal(t, randomBlog.Title, post.Title)
+	require.NotEqual(t, randomBlog.Summary, post.Summary)
+	require.Equal(t, randomBlog.Content, post.Content)
+	require.Equal(t, randomBlog.Likes, post.Likes)
+	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
+	require.Equal(t, randomBlog.UpdatedAt, post.UpdatedAt)
 }
 
 func TestUpdatePostContent(t *testing.T) {
@@ -111,19 +111,19 @@ func TestUpdatePostContent(t *testing.T) {
 			String: util.RandomDescription(),
 		},
 	}
-	blog, err := testStore.UpdatePost(context.Background(), updatePost)
+	post, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
-	require.NotEmpty(t, blog)
+	require.NotEmpty(t, post)
 
-	require.NotEqual(t, randomBlog.Content, blog.Content)
-	require.Equal(t, updatePost.Content.String, blog.Content)
+	require.NotEqual(t, randomBlog.Content, post.Content)
+	require.Equal(t, updatePost.Content.String, post.Content)
 
-	require.Equal(t, randomBlog.UserID, blog.UserID)
-	require.Equal(t, randomBlog.Title, blog.Title)
-	require.Equal(t, randomBlog.Summary, blog.Summary)
-	require.Equal(t, randomBlog.Likes, blog.Likes)
-	require.Equal(t, randomBlog.CreatedAt, blog.CreatedAt)
-	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
+	require.Equal(t, randomBlog.UserID, post.UserID)
+	require.Equal(t, randomBlog.Title, post.Title)
+	require.Equal(t, randomBlog.Summary, post.Summary)
+	require.Equal(t, randomBlog.Likes, post.Likes)
+	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
+	require.Equal(t, randomBlog.UpdatedAt, post.UpdatedAt)
 }
 
 func TestUpdatePostCover(t *testing.T) {
@@ -135,19 +135,19 @@ func TestUpdatePostCover(t *testing.T) {
 			String: util.RandomImage() + "/update",
 		},
 	}
-	blog, err := testStore.UpdatePost(context.Background(), updatePost)
+	post, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
-	require.NotEmpty(t, blog)
+	require.NotEmpty(t, post)
 
-	require.NotEqual(t, randomBlog.CoverImage, blog.CoverImage)
-	require.Equal(t, updatePost.CoverImage, blog.CoverImage)
+	require.NotEqual(t, randomBlog.CoverImage, post.CoverImage)
+	require.Equal(t, updatePost.CoverImage, post.CoverImage)
 
-	require.Equal(t, randomBlog.UserID, blog.UserID)
-	require.Equal(t, randomBlog.Title, blog.Title)
-	require.Equal(t, randomBlog.Content, blog.Content)
-	require.Equal(t, randomBlog.Likes, blog.Likes)
-	require.Equal(t, randomBlog.CreatedAt, blog.CreatedAt)
-	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
+	require.Equal(t, randomBlog.UserID, post.UserID)
+	require.Equal(t, randomBlog.Title, post.Title)
+	require.Equal(t, randomBlog.Content, post.Content)
+	require.Equal(t, randomBlog.Likes, post.Likes)
+	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
+	require.Equal(t, randomBlog.UpdatedAt, post.UpdatedAt)
 }
 
 func TestUpdatePostAll(t *testing.T) {
@@ -175,25 +175,25 @@ func TestUpdatePostAll(t *testing.T) {
 			String: util.RandomImage() + "/update",
 		},
 	}
-	blog, err := testStore.UpdatePost(context.Background(), updatePost)
+	post, err := testStore.UpdatePost(context.Background(), updatePost)
 	require.NoError(t, err)
-	require.NotEmpty(t, blog)
+	require.NotEmpty(t, post)
 
-	require.NotEqual(t, randomBlog.CoverImage, blog.CoverImage)
-	require.NotEqual(t, randomBlog.Likes, blog.Likes)
-	require.NotEqual(t, randomBlog.Title, blog.Title)
-	require.NotEqual(t, randomBlog.Summary, blog.Summary)
-	require.NotEqual(t, randomBlog.Content, blog.Content)
+	require.NotEqual(t, randomBlog.CoverImage, post.CoverImage)
+	require.NotEqual(t, randomBlog.Likes, post.Likes)
+	require.NotEqual(t, randomBlog.Title, post.Title)
+	require.NotEqual(t, randomBlog.Summary, post.Summary)
+	require.NotEqual(t, randomBlog.Content, post.Content)
 
-	require.Equal(t, updatePost.Title.String, blog.Title)
-	require.Equal(t, updatePost.Summary.String, blog.Summary)
-	require.Equal(t, updatePost.Content.String, blog.Content)
-	require.Equal(t, updatePost.Likes, blog.Likes)
-	require.Equal(t, updatePost.CoverImage, blog.CoverImage)
+	require.Equal(t, updatePost.Title.String, post.Title)
+	require.Equal(t, updatePost.Summary.String, post.Summary)
+	require.Equal(t, updatePost.Content.String, post.Content)
+	require.Equal(t, updatePost.Likes, post.Likes)
+	require.Equal(t, updatePost.CoverImage, post.CoverImage)
 
-	require.Equal(t, randomBlog.UserID, blog.UserID)
-	require.Equal(t, randomBlog.CreatedAt, blog.CreatedAt)
-	require.Equal(t, randomBlog.UpdatedAt, blog.UpdatedAt)
+	require.Equal(t, randomBlog.UserID, post.UserID)
+	require.Equal(t, randomBlog.CreatedAt, post.CreatedAt)
+	require.Equal(t, randomBlog.UpdatedAt, post.UpdatedAt)
 }
 
 func TestDeleteBlog(t *testing.T) {
