@@ -64,6 +64,10 @@ func (server *Server) setupRouter() {
 	{
 		categoryRoutes.GET("/index", server.GetCategories)
 	}
+	tagRoutes := router.Group("/v1/tags").Use(authMiddleware(server.tokenMaker))
+	{
+		tagRoutes.GET("/index", server.GetTags)
+	}
 
 	// Serve the bundled static files
 	statikFS, err := fs.New()

@@ -429,6 +429,21 @@ func (mr *MockStoreMockRecorder) GetTag(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTag", reflect.TypeOf((*MockStore)(nil).GetTag), arg0, arg1)
 }
 
+// GetTags mocks base method.
+func (m *MockStore) GetTags(arg0 context.Context) ([]db.Tag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTags", arg0)
+	ret0, _ := ret[0].([]db.Tag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTags indicates an expected call of GetTags.
+func (mr *MockStoreMockRecorder) GetTags(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTags", reflect.TypeOf((*MockStore)(nil).GetTags), arg0)
+}
+
 // GetTagsForPost mocks base method.
 func (m *MockStore) GetTagsForPost(arg0 context.Context, arg1 int32) ([]db.Tag, error) {
 	m.ctrl.T.Helper()

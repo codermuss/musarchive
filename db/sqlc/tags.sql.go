@@ -32,6 +32,31 @@ func (q *Queries) GetTag(ctx context.Context, id int32) (Tag, error) {
 	return i, err
 }
 
+const getTags = `-- name: GetTags :many
+SELECT id, name 
+FROM tags
+`
+
+func (q *Queries) GetTags(ctx context.Context) ([]Tag, error) {
+	rows, err := q.db.Query(ctx, getTags)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Tag{}
+	for rows.Next() {
+		var i Tag
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertTag = `-- name: InsertTag :one
 INSERT INTO tags (name) 
 VALUES ($1) 
