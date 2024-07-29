@@ -38,6 +38,7 @@ type Querier interface {
 	GetProfile(ctx context.Context, userID int32) (Profile, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTag(ctx context.Context, id int32) (Tag, error)
+	GetTags(ctx context.Context) ([]Tag, error)
 	GetTagsForPost(ctx context.Context, postID int32) ([]Tag, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	GetUserPost(ctx context.Context, arg GetUserPostParams) (GetUserPostRow, error)

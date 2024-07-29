@@ -8,6 +8,10 @@ SELECT id, name
 FROM tags 
 WHERE id = $1;
 
+-- name: GetTags :many
+SELECT id, name 
+FROM tags;
+
 -- name: UpdateTag :one
 UPDATE tags 
 SET name = $1
