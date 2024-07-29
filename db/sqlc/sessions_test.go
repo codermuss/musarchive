@@ -35,7 +35,20 @@ func TestCreateCreateSession(t *testing.T) {
 
 func TestGetSession(t *testing.T) {
 	session := createSession(t)
-	comments, err := testStore.GetSession(context.Background(), session.ID)
+	takenSession, err := testStore.GetSession(context.Background(), session.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, comments)
+	require.NotEmpty(t, takenSession)
+}
+
+func TestDeleteSession(t *testing.T) {
+	session := createSession(t)
+	takenSession, err := testStore.GetSession(context.Background(), session.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, takenSession)
+	err = testStore.DeleteSession(context.Background(), session.ID)
+	require.NoError(t, err)
+	deletedSession, err := testStore.GetSession(context.Background(), session.ID)
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrRecordNotFound)
+	require.Empty(t, deletedSession)
 }

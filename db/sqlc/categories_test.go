@@ -33,6 +33,18 @@ func TestGetCategory(t *testing.T) {
 
 }
 
+func TestGetCategories(t *testing.T) {
+	createRandomCategory(t)
+	createRandomCategory(t)
+	createRandomCategory(t)
+
+	categories, err := testStore.GetCategories(context.Background())
+	require.NoError(t, err)
+	require.NotEmpty(t, categories)
+	require.True(t, len(categories) > 2)
+
+}
+
 func TestUpdateCategory(t *testing.T) {
 	randomcategory := createRandomCategory(t)
 	newCategoryName := util.RandomString(6)

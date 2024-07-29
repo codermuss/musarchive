@@ -32,6 +32,17 @@ func TestGetTag(t *testing.T) {
 	require.Equal(t, randomtag.Name, tag.Name)
 
 }
+func TestGetTags(t *testing.T) {
+	createRandomTag(t)
+	createRandomTag(t)
+	createRandomTag(t)
+
+	tags, err := testStore.GetTags(context.Background())
+	require.NoError(t, err)
+	require.NotEmpty(t, tags)
+	require.True(t, len(tags) > 2)
+
+}
 
 func TestUpdateTag(t *testing.T) {
 	randomtag := createRandomTag(t)

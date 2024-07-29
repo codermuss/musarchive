@@ -12,6 +12,22 @@ import (
 	"github.com/google/uuid"
 )
 
+const deleteSession = `-- name: DeleteSession :exec
+
+DELETE FROM sessions 
+WHERE id = $1
+`
+
+// -- name: UpdateSession :one
+// UPDATE sessions
+// SET user_id = $1, refresh_token = $2, user_agent = $3, client_ip = $4, is_blocked = $5, expires_at = $6, created_at = $7
+// WHERE id = $8
+// RETURNING *;
+func (q *Queries) DeleteSession(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteSession, id)
+	return err
+}
+
 const getSession = `-- name: GetSession :one
 SELECT id, user_id, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at 
 FROM sessions 

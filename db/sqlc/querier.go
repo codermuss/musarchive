@@ -19,6 +19,12 @@ type Querier interface {
 	DeletePostCategory(ctx context.Context, arg DeletePostCategoryParams) error
 	DeletePostTag(ctx context.Context, arg DeletePostTagParams) error
 	DeleteProfile(ctx context.Context, userID int32) error
+	// -- name: UpdateSession :one
+	// UPDATE sessions
+	// SET user_id = $1, refresh_token = $2, user_agent = $3, client_ip = $4, is_blocked = $5, expires_at = $6, created_at = $7
+	// WHERE id = $8
+	// RETURNING *;
+	DeleteSession(ctx context.Context, id uuid.UUID) error
 	DeleteTag(ctx context.Context, id int32) error
 	DeleteUser(ctx context.Context, id int32) error
 	DeleteUserFollower(ctx context.Context, arg DeleteUserFollowerParams) error

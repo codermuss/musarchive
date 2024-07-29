@@ -14,6 +14,6 @@ WHERE id = $1;
 -- WHERE id = $8
 -- RETURNING *;
 
--- -- name: DeleteSession :exec
--- DELETE FROM sessions 
--- WHERE id = $1;
+-- name: DeleteSession :exec
+DELETE FROM sessions 
+WHERE id = $1;
