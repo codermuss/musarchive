@@ -19,7 +19,8 @@
     },
 
     "User":{
-      "RegisterSuccess":"User registered successfully!"
+      "RegisterSuccess":"User registered successfully!",
+      "LogoutSuccess":"Successfully logged out!"
     },
     "Pagination":{
       "pageError":"Invalid page number: {{.arg0}}",

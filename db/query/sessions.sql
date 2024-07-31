@@ -8,11 +8,10 @@ SELECT id, user_id, refresh_token, user_agent, client_ip, is_blocked, expires_at
 FROM sessions 
 WHERE id = $1;
 
--- -- name: UpdateSession :one
--- UPDATE sessions 
--- SET user_id = $1, refresh_token = $2, user_agent = $3, client_ip = $4, is_blocked = $5, expires_at = $6, created_at = $7
--- WHERE id = $8
--- RETURNING *;
+-- name: UpdateSession :exec
+UPDATE sessions 
+SET is_blocked = $1
+WHERE id = $2;
 
 -- name: DeleteSession :exec
 DELETE FROM sessions 

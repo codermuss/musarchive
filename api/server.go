@@ -68,6 +68,10 @@ func (server *Server) setupRouter() {
 	{
 		tagRoutes.GET("/index", server.GetTags)
 	}
+	profileRoutes := router.Group("/v1/profile").Use(authMiddleware(server.tokenMaker))
+	{
+		profileRoutes.POST("/logout", server.LogoutUser)
+	}
 
 	// Serve the bundled static files
 	statikFS, err := fs.New()

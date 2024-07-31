@@ -114,7 +114,7 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 	}
 
 	session, err := server.store.InsertSession(ctx, db.InsertSessionParams{
-		ID:           refreshPayload.ID,
+		ID:           accessPayload.ID,
 		UserID:       user.ID,
 		RefreshToken: refreshToken,
 		UserAgent:    ctx.Request.UserAgent(),

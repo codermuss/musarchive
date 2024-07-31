@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -55,6 +56,7 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 		}
 		accessToken := fields[1]
 		payload, err := tokenMaker.VerifyToken(accessToken)
+		fmt.Println(payload)
 		if err != nil {
 			AbortResponse(ctx, BaseResponse{
 				Code: http.StatusUnauthorized,

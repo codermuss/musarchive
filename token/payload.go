@@ -17,6 +17,7 @@ type Payload struct {
 	ID        uuid.UUID `json:"id"`
 	UserID    int       `json:"user_id"`
 	Role      string    `json:role`
+	IsBlocked bool      `json:is_blocked`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `json:"expired_at"`
 }
