@@ -728,6 +728,21 @@ func (mr *MockStoreMockRecorder) ListOnboarding(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListOnboarding", reflect.TypeOf((*MockStore)(nil).ListOnboarding), arg0)
 }
 
+// RegisterUserTx mocks base method.
+func (m *MockStore) RegisterUserTx(arg0 context.Context, arg1 db.RegisterUserTxParams) (db.RegisterUserTxResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RegisterUserTx", arg0, arg1)
+	ret0, _ := ret[0].(db.RegisterUserTxResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RegisterUserTx indicates an expected call of RegisterUserTx.
+func (mr *MockStoreMockRecorder) RegisterUserTx(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUserTx", reflect.TypeOf((*MockStore)(nil).RegisterUserTx), arg0, arg1)
+}
+
 // UpdateCategory mocks base method.
 func (m *MockStore) UpdateCategory(arg0 context.Context, arg1 db.UpdateCategoryParams) (db.Category, error) {
 	m.ctrl.T.Helper()

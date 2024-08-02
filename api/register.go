@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -60,7 +61,7 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.InsertUserParams{
+	argUser := db.InsertUserParams{
 		Username:       req.Username,
 		HashedPassword: hashedPassword,
 		FullName:       req.FullName,
@@ -69,7 +70,17 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		Avatar:         req.Avatar,
 		BirthDate:      req.BirthDate,
 	}
-	user, err := server.store.InsertUser(ctx, arg)
+	argAfterCreate := func(user db.User) error {
+		fmt.Println("after create triggered")
+		return nil
+	}
+
+	arg := db.RegisterUserTxParams{
+		InsertUserParams: argUser,
+		AfterCreate:      argAfterCreate,
+	}
+
+	userAndProfile, err := server.store.RegisterUserTx(ctx, arg)
 
 	if err != nil {
 
@@ -94,21 +105,9 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	responseUser := UserResponse{
-		ID:                user.ID,
-		Username:          user.Username,
-		FullName:          user.FullName,
-		Email:             user.Email,
-		Role:              user.Role,
-		Avatar:            user.Avatar,
-		BirthDate:         user.BirthDate,
-		PasswordChangedAt: user.PasswordChangedAt,
-		CreatedAt:         user.CreatedAt,
-	}
-
 	BuildResponse(ctx, BaseResponse{
 		Code: http.StatusOK,
-		Data: responseUser,
+		Data: userAndProfile,
 		Message: ResponseMessage{
 			Type:    SUCCESS,
 			Content: server.lm.Translate(localeValue, localization.User_RegisterSuccess),
