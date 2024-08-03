@@ -11,6 +11,7 @@ import (
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
 	localization "github.com/mustafayilmazdev/musarchive/locales"
 	"github.com/mustafayilmazdev/musarchive/util"
+	"github.com/mustafayilmazdev/musarchive/worker"
 )
 
 type registerUserRequest struct {
@@ -100,6 +101,20 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 			Message: ResponseMessage{
 				Type:    ERROR,
 				Content: server.lm.Translate(localeValue, localization.Errors_InternalError, err),
+			},
+		})
+		return
+	}
+	taskPayload := &worker.PayloadSendVerifyEmail{
+		Username: userAndProfile.User.Username,
+	}
+	err = server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload)
+	if err != nil {
+		BuildResponse(ctx, BaseResponse{
+			Code: http.StatusInternalServerError,
+			Message: ResponseMessage{
+				Type:    ERROR,
+				Content: server.lm.Translate(localeValue, localization.Task_FailedDistribute, err),
 			},
 		})
 		return

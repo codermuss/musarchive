@@ -17,6 +17,7 @@ import (
 	mockdb "github.com/mustafayilmazdev/musarchive/db/mock"
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
 	"github.com/mustafayilmazdev/musarchive/util"
+	mockwk "github.com/mustafayilmazdev/musarchive/worker/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -60,7 +61,7 @@ func TestCreateUserAPI(t *testing.T) {
 	testCases := []struct {
 		name          string
 		body          gin.H
-		buildStubs    func(store *mockdb.MockStore)
+		buildStubs    func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor)
 		checkResponse func(recoder *httptest.ResponseRecorder)
 	}{
 		{
@@ -74,7 +75,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"role":       user.Role,
 				"birth_date": user.BirthDate,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				arg := db.InsertUserParams{
 					Username:  user.Username,
 					FullName:  user.FullName,
@@ -102,7 +103,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
 					InsertUser(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -120,7 +121,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
 					InsertUser(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -137,7 +138,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
 					InsertUser(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -155,7 +156,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     "invalid-email",
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
 					InsertUser(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -172,7 +173,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
 					InsertUser(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -188,11 +189,15 @@ func TestCreateUserAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-			store := mockdb.NewMockStore(ctrl)
-			tc.buildStubs(store)
-			server := newTestServer(t, store)
+
+			storeCtrl := gomock.NewController(t)
+			defer storeCtrl.Finish()
+			store := mockdb.NewMockStore(storeCtrl)
+			taskCtrl := gomock.NewController(t)
+			defer taskCtrl.Finish()
+			taskDistributor := mockwk.NewMockTaskDistributor(taskCtrl)
+			tc.buildStubs(store, taskDistributor)
+			server := newTestServer(t, store, taskDistributor)
 			recorder := httptest.NewRecorder()
 			// Marshal body data to JSON
 			data, err := json.Marshal(tc.body)

@@ -9,25 +9,27 @@ import (
 	localization "github.com/mustafayilmazdev/musarchive/locales"
 	"github.com/mustafayilmazdev/musarchive/token"
 	"github.com/mustafayilmazdev/musarchive/util"
+	"github.com/mustafayilmazdev/musarchive/worker"
 	"github.com/rakyll/statik/fs"
 )
 
 // * Note [codermuss]: Server serves HTTP requests for our banking service.
 type Server struct {
-	config     util.Config
-	store      db.Store
-	tokenMaker token.Maker
-	Router     *gin.Engine
-	lm         *localization.LocalizationManager
+	config          util.Config
+	store           db.Store
+	tokenMaker      token.Maker
+	Router          *gin.Engine
+	lm              *localization.LocalizationManager
+	taskDistributor worker.TaskDistributor
 }
 
 // * Note [codermuss]: NewServer creates a new HTTP server and setup routing
-func NewServer(config util.Config, store db.Store) (*Server, error) {
+func NewServer(config util.Config, store db.Store, taskDistributor worker.TaskDistributor) (*Server, error) {
 	tokenMaker, err := token.NewJWTMaker(config.TokenSymetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
-	server := &Server{config: config, store: store, tokenMaker: tokenMaker, lm: localization.GetInstance()}
+	server := &Server{config: config, store: store, tokenMaker: tokenMaker, lm: localization.GetInstance(), taskDistributor: taskDistributor}
 
 	server.setupRouter()
 	return server, nil

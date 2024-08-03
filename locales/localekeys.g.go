@@ -20,6 +20,7 @@ const (
 	Pagination_sizeError = "Pagination.sizeError"
 	Post_InsertSuccess = "Post.InsertSuccess"
 	Success_Migrate = "Success.Migrate"
+	Task_FailedDistribute = "Task.FailedDistribute"
 	User_LogoutSuccess = "User.LogoutSuccess"
 	User_RegisterSuccess = "User.RegisterSuccess"
 )
