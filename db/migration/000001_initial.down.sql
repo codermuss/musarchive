@@ -15,6 +15,7 @@ ALTER TABLE "post_categories" DROP CONSTRAINT "post_categories_post_id_fkey";
 ALTER TABLE "post_tags" DROP CONSTRAINT "post_tags_tag_id_fkey";
 ALTER TABLE "post_tags" DROP CONSTRAINT "post_tags_post_id_fkey";
 ALTER TABLE "posts" DROP CONSTRAINT "posts_user_id_fkey";
+ALTER TABLE "verify_emails" DROP CONSTRAINT "verify_emails_user_id_fkey";
 
 -- Drop tables in reverse order of creation
 DROP TABLE IF EXISTS "sessions";
@@ -31,3 +32,4 @@ DROP TABLE IF EXISTS "posts";
 DROP TABLE IF EXISTS "categories";
 DROP TABLE IF EXISTS "users";
 DROP TABLE IF EXISTS "onboarding";
+DROP TABLE IF EXISTS "verify_emails";

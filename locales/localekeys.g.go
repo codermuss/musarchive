@@ -23,4 +23,5 @@ const (
 	Task_FailedDistribute = "Task.FailedDistribute"
 	User_LogoutSuccess = "User.LogoutSuccess"
 	User_RegisterSuccess = "User.RegisterSuccess"
+	User_VerifyEmail = "User.VerifyEmail"
 )

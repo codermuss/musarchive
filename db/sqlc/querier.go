@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	DeleteCategory(ctx context.Context, id int32) error
 	DeleteComment(ctx context.Context, id int32) error
 	DeleteFeaturedStory(ctx context.Context, id int32) error
@@ -66,6 +67,7 @@ type Querier interface {
 	UpdateSession(ctx context.Context, arg UpdateSessionParams) error
 	UpdateTag(ctx context.Context, arg UpdateTagParams) (Tag, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
+	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
 }
 
 var _ Querier = (*Queries)(nil)

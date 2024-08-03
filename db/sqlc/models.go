@@ -96,6 +96,7 @@ type User struct {
 	Avatar            pgtype.Text `json:"avatar"`
 	Role              string      `json:"role"`
 	BirthDate         pgtype.Date `json:"birth_date"`
+	IsEmailVerified   bool        `json:"is_email_verified"`
 	PasswordChangedAt time.Time   `json:"password_changed_at"`
 	CreatedAt         time.Time   `json:"created_at"`
 }
@@ -108,4 +109,14 @@ type UserFollower struct {
 type UserPost struct {
 	UserID int32 `json:"user_id"`
 	PostID int32 `json:"post_id"`
+}
+
+type VerifyEmail struct {
+	ID         int32     `json:"id"`
+	Username   string    `json:"username"`
+	Email      string    `json:"email"`
+	SecretCode string    `json:"secret_code"`
+	IsUsed     bool      `json:"is_used"`
+	CreatedAt  time.Time `json:"created_at"`
+	ExpiredAt  time.Time `json:"expired_at"`
 }

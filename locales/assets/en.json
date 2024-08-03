@@ -20,6 +20,7 @@
 
     "User":{
       "RegisterSuccess":"User registered successfully!",
+      "VerifyEmail":"Please verify your email to login!",
       "LogoutSuccess":"Successfully logged out!"
     },
     "Pagination":{
