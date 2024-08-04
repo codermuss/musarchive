@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #fce4ec; 
+            color: #d32f2f; 
+            text-align: center; 
+            margin: 0; 
+            padding: 0; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .container { 
+            padding: 40px; 
+            max-width: 600px; 
+            background-color: #ffffff; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); 
+        }
+        .icon { 
+            font-size: 5em; 
+            color: #d32f2f; 
+            margin-bottom: 20px; 
+        }
+        h1 { 
+            font-size: 2.5em; 
+            margin-bottom: 10px; 
+            color: #d32f2f; 
+        }
+        .timestamp { 
+            font-size: 0.9em; 
+            color: #888; 
+            margin-bottom: 20px; 
+        }
+        p { 
+            font-size: 1.2em; 
+            margin-bottom: 30px; 
+            line-height: 1.5; 
+        }
+        .error-message {
+            font-size: 1em;
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fbe9e7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚫</div>
+        <h1>{{.Title}}</h1>
+        <div class="timestamp">{{.Timestamp}}</div>
+        <p>{{.Content}}</p>
+        {{if .ErrorMessage}}
+            <div class="error-message">{{.ErrorMessage}}</div>
+        {{end}}
+    </div>
+</body>
+</html>

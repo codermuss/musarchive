@@ -10,8 +10,18 @@ WHERE username = $1;
 
 -- name: UpdateUser :one
 UPDATE users 
-SET username = $1, hashed_password = $2, full_name = $3, email = $4, avatar = $5, role=$6, birth_date = $7, is_email_verified=$8,password_changed_at = $9, created_at = $10
-WHERE id = $11
+SET 
+    username = COALESCE(sqlc.narg(username), username), 
+    hashed_password = COALESCE(sqlc.narg(hashed_password), hashed_password), 
+    full_name = COALESCE(sqlc.narg(full_name), full_name), 
+    email = COALESCE(sqlc.narg(email), email), 
+    avatar = COALESCE(sqlc.narg(avatar), avatar), 
+    role = COALESCE(sqlc.narg(role), role), 
+    birth_date = COALESCE(sqlc.narg(birth_date), birth_date), 
+    is_email_verified = COALESCE(sqlc.narg(is_email_verified), is_email_verified), 
+    password_changed_at = COALESCE(sqlc.narg(password_changed_at), password_changed_at), 
+    created_at = COALESCE(sqlc.narg(created_at), created_at)
+WHERE id = sqlc.arg(id)
 RETURNING *;
 
 -- name: DeleteUser :exec

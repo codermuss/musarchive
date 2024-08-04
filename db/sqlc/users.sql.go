@@ -96,23 +96,33 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users 
-SET username = $1, hashed_password = $2, full_name = $3, email = $4, avatar = $5, role=$6, birth_date = $7, is_email_verified=$8,password_changed_at = $9, created_at = $10
+SET 
+    username = COALESCE($1, username), 
+    hashed_password = COALESCE($2, hashed_password), 
+    full_name = COALESCE($3, full_name), 
+    email = COALESCE($4, email), 
+    avatar = COALESCE($5, avatar), 
+    role = COALESCE($6, role), 
+    birth_date = COALESCE($7, birth_date), 
+    is_email_verified = COALESCE($8, is_email_verified), 
+    password_changed_at = COALESCE($9, password_changed_at), 
+    created_at = COALESCE($10, created_at)
 WHERE id = $11
 RETURNING id, username, hashed_password, full_name, email, avatar, role, birth_date, is_email_verified, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
-	Username          string      `json:"username"`
-	HashedPassword    string      `json:"hashed_password"`
-	FullName          string      `json:"full_name"`
-	Email             string      `json:"email"`
-	Avatar            pgtype.Text `json:"avatar"`
-	Role              string      `json:"role"`
-	BirthDate         pgtype.Date `json:"birth_date"`
-	IsEmailVerified   bool        `json:"is_email_verified"`
-	PasswordChangedAt time.Time   `json:"password_changed_at"`
-	CreatedAt         time.Time   `json:"created_at"`
-	ID                int32       `json:"id"`
+	Username          pgtype.Text        `json:"username"`
+	HashedPassword    pgtype.Text        `json:"hashed_password"`
+	FullName          pgtype.Text        `json:"full_name"`
+	Email             pgtype.Text        `json:"email"`
+	Avatar            pgtype.Text        `json:"avatar"`
+	Role              pgtype.Text        `json:"role"`
+	BirthDate         pgtype.Date        `json:"birth_date"`
+	IsEmailVerified   pgtype.Bool        `json:"is_email_verified"`
+	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	ID                int32              `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

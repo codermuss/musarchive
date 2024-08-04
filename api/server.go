@@ -40,6 +40,7 @@ func (server *Server) setupRouter() {
 
 	router.Use(ZerologMiddleware())
 	router.Use(gin.Recovery())
+	router.LoadHTMLGlob("/Users/mustafayilmaz/Go/projects/musarchive/templates/*")
 
 	// Serve the API endpoints
 	api := router.Group("/v1")
@@ -53,6 +54,7 @@ func (server *Server) setupRouter() {
 	{
 		authRoutes.POST("/register", server.RegisterUser)
 		authRoutes.POST("/login", server.LoginUser)
+		authRoutes.GET("/verify_email", server.VerifyEmail)
 	}
 
 	// Posts routes (protected by auth middleware)

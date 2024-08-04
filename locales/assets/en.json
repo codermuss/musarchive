@@ -7,7 +7,8 @@
       "MigrateUp":"Failed to run migrate up",
       "HttpGateway":"HTTP gateway server failed to server",
       "HttpGatewayShutdown":"Failed to shutdown HTTP gateway server",
-      "InternalError":"Internal error: {{.arg0}}"
+      "InternalError":"Internal error: {{.arg0}}",
+      "AnErrorOccured":"An error occurred while processing your request."
     },
     "Success":{
       "Migrate":"DB migrated successfully"
@@ -21,7 +22,14 @@
     "User":{
       "RegisterSuccess":"User registered successfully!",
       "VerifyEmail":"Please verify your email to login!",
-      "LogoutSuccess":"Successfully logged out!"
+      "VerifiedEmail":"Email has been verified successfully!",
+      "LogoutSuccess":"Successfully logged out!",
+      "EmailTitle":"Welcome to Musarchive",
+      "EmailContent":"Hello {{.arg0}},<br/>Thank you for registering with us!</br>Please <a href=\"{{.arg1}}\">click here</a> to verify your email address.</br>",
+      "VerifyEmailMessage": "Welcome! We're excited to have you on board. You can now enjoy all the features of our platform. If you encounter any issues, feel free to reach out to our support team.",
+      "VerifyEmailSuccess":"Your email has been verified successfully!",
+      "VerifyEmailSuccessTitle":"Success!",
+      "VerifyEmailErrorTitle":"Error!"
     },
     "Pagination":{
       "pageError":"Invalid page number: {{.arg0}}",

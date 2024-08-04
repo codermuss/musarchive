@@ -1,0 +1,47 @@
+{
+  "Errors": {
+    "CanNotConnectToDb": "Veritabanına bağlanılamıyor: {{.arg0}}",
+    "ErrorFromWaitGroup": "Bekleme grubundan hata",
+    "MigrationInstance": "Yeni göç örneği oluşturulamadı",
+    "MigrateUp": "Göç işlemi yapılamadı",
+    "HttpGateway": "HTTP geçiş sunucusu hizmet veremedi",
+    "HttpGatewayShutdown": "HTTP geçiş sunucusunu kapatmak başarısız oldu",
+    "InternalError": "İç hata: {{.arg0}}",
+    "AnErrorOccured": "İsteğiniz işlenirken bir hata oluştu."
+  },
+  "Success": {
+    "Migrate": "Veritabanı başarıyla göç edildi"
+  },
+  "Info": {
+    "StartHttp": "HTTP geçiş sunucusu {{.arg0}} adresinde başlatıldı",
+    "GracefulShutdown": "HTTP geçiş sunucusu düzgün şekilde kapatıldı",
+    "StopHttp": "HTTP geçiş sunucusu durduruldu"
+  },
+  "User": {
+    "RegisterSuccess": "Kullanıcı başarıyla kaydedildi!",
+    "VerifyEmail": "Giriş yapmak için e-posta adresinizi doğrulayın!",
+    "VerifiedEmail": "E-posta başarıyla doğrulandı!",
+    "LogoutSuccess": "Başarıyla çıkış yapıldı!",
+    "EmailTitle": "Musarchive'ye Hoşgeldiniz",
+    "EmailContent": "Merhaba {{.arg0}},<br/>Bizimle kayıt olduğunuz için teşekkür ederiz!</br>Lütfen e-posta adresinizi doğrulamak için <a href=\"{{.arg1}}\">buraya tıklayın</a>.</br>",
+    "VerifyEmailMessage": "Hoş geldiniz! Aramızda olduğunuz için çok heyecanlıyız. Artık platformumuzun tüm özelliklerinden yararlanabilirsiniz. Herhangi bir sorunla karşılaşırsanız, destek ekibimizle iletişime geçmekten çekinmeyin.",
+    "VerifyEmailSuccess": "E-posta adresiniz başarıyla doğrulandı!",
+    "VerifyEmailSuccessTitle": "Başarılı!",
+    "VerifyEmailErrorTitle": "Hata!"
+  },
+  "Pagination": {
+    "pageError": "Geçersiz sayfa numarası: {{.arg0}}",
+    "sizeError": "Geçersiz boyut numarası: {{.arg0}}"
+  },
+  "Middleware": {
+    "UnsupportedAuthorization": "Desteklenmeyen yetkilendirme türü {{.arg0}}",
+    "InvalidAuthorization": "Geçersiz yetkilendirme başlığı formatı",
+    "HeaderIsNotProvided": "Yetkilendirme başlığı sağlanmadı"
+  },
+  "Post": {
+    "InsertSuccess": "Gönderi başarıyla oluşturuldu!"
+  },
+  "Task": {
+    "FailedDistribute": "Doğrulama e-postası gönderme görevini dağıtmak başarısız oldu: {{.arg0}}"
+  }
+}

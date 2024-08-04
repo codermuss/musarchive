@@ -7,6 +7,7 @@ import (
 
 	"github.com/hibiken/asynq"
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
+	localization "github.com/mustafayilmazdev/musarchive/locales"
 	"github.com/mustafayilmazdev/musarchive/util"
 	"github.com/rs/zerolog/log"
 )
@@ -15,6 +16,7 @@ const TaskSendVerifyEmail = "task:send_verify_email"
 
 type PayloadSendVerifyEmail struct {
 	Username string `json:"username"`
+	Locale   string `json:"locale"`
 }
 
 func (distributor *RedisTaskDistributor) DistributeTaskSendVerifyEmail(ctx context.Context, payload *PayloadSendVerifyEmail, opts ...asynq.Option) error {
@@ -55,13 +57,10 @@ func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Cont
 	if err != nil {
 		return fmt.Errorf("failed to create verify email: %w", err)
 	}
-	subject := "Welcome to Simple Bank"
-	verifyUrl := fmt.Sprintf("http://localhost:8080/v1/verify_email?email_id=%d&secret_code=%s", verifyEmail.ID, verifyEmail.SecretCode)
-	content := fmt.Sprintf(`
-	Hello %s,<br/>
-	Thank you for registering with us!</br>
-	Please <a href="%s">click here</a> to verify your email address.</br>
-	`, user.FullName, verifyUrl)
+	lm := localization.GetInstance()
+	subject := lm.Translate(payload.Locale, localization.User_EmailTitle)
+	verifyUrl := fmt.Sprintf("http://localhost:8080/v1/auth/verify_email?email_id=%d&secret_code=%s&locale=%s", verifyEmail.ID, verifyEmail.SecretCode, payload.Locale)
+	content := lm.Translate(payload.Locale, localization.User_EmailContent, user.FullName, verifyUrl)
 
 	to := []string{user.Email}
 

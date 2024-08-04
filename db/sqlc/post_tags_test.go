@@ -41,7 +41,6 @@ func TestDeletePostTag(t *testing.T) {
 	tags, err := testStore.GetTagsForPost(context.Background(), randomPostTag[0].PostID)
 	require.NoError(t, err)
 	require.NotEmpty(t, tags)
-	fmt.Println(tags)
 	err = testStore.DeletePostTag(context.Background(), DeletePostTagParams{
 		PostID: randomPostTag[0].PostID,
 		TagID:  tags[len(tags)-1].ID,
