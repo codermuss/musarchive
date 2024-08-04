@@ -29,8 +29,12 @@ server:
 
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/mustafayilmazdev/musarchive/db/sqlc Store
+	mockgen -package mockdb -destination worker/mock/distributor.go github.com/mustafayilmazdev/musarchive/worker TaskDistributor
 
 locale:
 	musale --json=locales/assets/en.json --output=locales/localekeys.go -p=localization
 
-.PHONY: postgres migrateup1 migrateup migratedown migratedown1 new_migration test sqlc server mock locale
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7.4-alpine
+
+.PHONY: postgres migrateup1 migrateup migratedown migratedown1 new_migration test sqlc server mock locale redis

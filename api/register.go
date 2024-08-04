@@ -1,16 +1,17 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgtype"
 
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
 	localization "github.com/mustafayilmazdev/musarchive/locales"
 	"github.com/mustafayilmazdev/musarchive/util"
+	"github.com/mustafayilmazdev/musarchive/worker"
 )
 
 type registerUserRequest struct {
@@ -32,6 +33,11 @@ type UserResponse struct {
 	BirthDate         pgtype.Date `json:"birth_date"`
 	PasswordChangedAt time.Time   `json:"password_changed_at"`
 	CreatedAt         time.Time   `json:"created_at"`
+}
+
+type RegisterResponse struct {
+	User    UserResponse `json:"user"`
+	Profile db.Profile   `json:"profile"`
 }
 
 func (server *Server) RegisterUser(ctx *gin.Context) {
@@ -71,8 +77,13 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		BirthDate:      req.BirthDate,
 	}
 	argAfterCreate := func(user db.User) error {
-		fmt.Println("after create triggered")
-		return nil
+		taskPayload := &worker.PayloadSendVerifyEmail{Username: user.Username, Locale: localeValue}
+		opts := []asynq.Option{
+			asynq.MaxRetry(10),
+			asynq.ProcessIn(10 * time.Second),
+			asynq.Queue(worker.QueueCritical),
+		}
+		return server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
 	}
 
 	arg := db.RegisterUserTxParams{
@@ -105,9 +116,24 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
+	registerResponse := RegisterResponse{
+		User: UserResponse{
+			ID:                userAndProfile.User.ID,
+			Username:          userAndProfile.User.Username,
+			FullName:          userAndProfile.User.FullName,
+			Email:             userAndProfile.User.Email,
+			Role:              userAndProfile.User.Role,
+			Avatar:            userAndProfile.User.Avatar,
+			BirthDate:         userAndProfile.User.BirthDate,
+			PasswordChangedAt: userAndProfile.User.PasswordChangedAt,
+			CreatedAt:         userAndProfile.User.CreatedAt,
+		},
+		Profile: userAndProfile.Profile,
+	}
+
 	BuildResponse(ctx, BaseResponse{
 		Code: http.StatusOK,
-		Data: userAndProfile,
+		Data: registerResponse,
 		Message: ResponseMessage{
 			Type:    SUCCESS,
 			Content: server.lm.Translate(localeValue, localization.User_RegisterSuccess),

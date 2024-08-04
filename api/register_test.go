@@ -17,17 +17,18 @@ import (
 	mockdb "github.com/mustafayilmazdev/musarchive/db/mock"
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
 	"github.com/mustafayilmazdev/musarchive/util"
+	mockwk "github.com/mustafayilmazdev/musarchive/worker/mock"
 	"github.com/stretchr/testify/require"
 )
 
 // Custom matcher for comparing InsertUserParams with hashed password
 type eqCreateUserParamsMatcher struct {
-	arg      db.InsertUserParams
+	arg      db.RegisterUserTxParams
 	password string
 }
 
 func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
-	arg, ok := x.(db.InsertUserParams)
+	arg, ok := x.(db.RegisterUserTxParams)
 	if !ok {
 		return false
 	}
@@ -39,8 +40,8 @@ func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
 	}
 
 	e.arg.HashedPassword = arg.HashedPassword
-	var leftValue db.InsertUserParams = e.arg
-	var rightValue db.InsertUserParams = arg
+	var leftValue db.InsertUserParams = e.arg.InsertUserParams
+	var rightValue db.InsertUserParams = arg.InsertUserParams
 	result := reflect.DeepEqual(leftValue, rightValue)
 	return result
 }
@@ -50,7 +51,7 @@ func (e eqCreateUserParamsMatcher) String() string {
 }
 
 // Helper function to create the custom matcher
-func EqCreateUserParams(arg db.InsertUserParams, password string) gomock.Matcher {
+func EqCreateUserParams(arg db.RegisterUserTxParams, password string) gomock.Matcher {
 	return eqCreateUserParamsMatcher{arg, password}
 }
 
@@ -60,7 +61,7 @@ func TestCreateUserAPI(t *testing.T) {
 	testCases := []struct {
 		name          string
 		body          gin.H
-		buildStubs    func(store *mockdb.MockStore)
+		buildStubs    func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor)
 		checkResponse func(recoder *httptest.ResponseRecorder)
 	}{
 		{
@@ -74,8 +75,8 @@ func TestCreateUserAPI(t *testing.T) {
 				"role":       user.Role,
 				"birth_date": user.BirthDate,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
-				arg := db.InsertUserParams{
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
+				argUser := db.InsertUserParams{
 					Username:  user.Username,
 					FullName:  user.FullName,
 					Email:     user.Email,
@@ -83,10 +84,18 @@ func TestCreateUserAPI(t *testing.T) {
 					BirthDate: user.BirthDate,
 					Role:      user.Role,
 				}
-				store.EXPECT().
-					InsertUser(gomock.Any(), EqCreateUserParams(arg, password)).
-					Times(1).
-					Return(user, nil)
+				argAfterCreate := func(user db.User) error {
+					fmt.Println("after create triggered")
+					return nil
+				}
+				arg := db.RegisterUserTxParams{
+					InsertUserParams: argUser,
+					AfterCreate:      argAfterCreate,
+				}
+				store.EXPECT().RegisterUserTx(gomock.Any(), EqCreateUserParams(arg, password)).Times(1).Return(db.RegisterUserTxResult{
+					User:    user,
+					Profile: db.Profile{},
+				}, nil)
 				require.Equal(t, user.Role, util.Standard)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -102,11 +111,11 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
-					InsertUser(gomock.Any(), gomock.Any()).
+					RegisterUserTx(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.User{}, sql.ErrConnDone)
+					Return(db.RegisterUserTxResult{}, sql.ErrConnDone)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
@@ -120,7 +129,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
 					InsertUser(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -137,11 +146,11 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
-					InsertUser(gomock.Any(), gomock.Any()).
+					RegisterUserTx(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.User{}, db.ErrUniqueViolation)
+					Return(db.RegisterUserTxResult{}, db.ErrUniqueViolation)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusForbidden, recorder.Code)
@@ -155,7 +164,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     "invalid-email",
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
 					InsertUser(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -172,7 +181,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 				store.EXPECT().
 					InsertUser(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -188,11 +197,15 @@ func TestCreateUserAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-			store := mockdb.NewMockStore(ctrl)
-			tc.buildStubs(store)
-			server := newTestServer(t, store)
+
+			storeCtrl := gomock.NewController(t)
+			defer storeCtrl.Finish()
+			store := mockdb.NewMockStore(storeCtrl)
+			taskCtrl := gomock.NewController(t)
+			defer taskCtrl.Finish()
+			taskDistributor := mockwk.NewMockTaskDistributor(taskCtrl)
+			tc.buildStubs(store, taskDistributor)
+			server := newTestServer(t, store, taskDistributor)
 			recorder := httptest.NewRecorder()
 			// Marshal body data to JSON
 			data, err := json.Marshal(tc.body)
@@ -228,6 +241,7 @@ func RandomUser(t *testing.T) (user db.User, password string) {
 			Valid: true,
 			Time:  util.DateFixed(),
 		},
+		IsEmailVerified:   true,
 		PasswordChangedAt: util.DateFixed(),
 		CreatedAt:         util.DateFixed(),
 	}
@@ -248,13 +262,13 @@ func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, expectedUser db.User
 	require.NoError(t, err)
 
 	// Unmarshal the Data field into a db.User
-	var gotUser db.User
-	err = json.Unmarshal(dataBytes, &gotUser)
+	var registerUserTxResult db.RegisterUserTxResult
+	err = json.Unmarshal(dataBytes, &registerUserTxResult)
 	require.NoError(t, err)
 
 	// Compare the expected and actual user fields
-	require.Equal(t, expectedUser.Username, gotUser.Username)
-	require.Equal(t, expectedUser.FullName, gotUser.FullName)
-	require.Equal(t, expectedUser.Email, gotUser.Email)
-	require.Empty(t, gotUser.HashedPassword)
+	require.Equal(t, expectedUser.Username, registerUserTxResult.User.Username)
+	require.Equal(t, expectedUser.FullName, registerUserTxResult.User.FullName)
+	require.Equal(t, expectedUser.Email, registerUserTxResult.User.Email)
+	require.Empty(t, registerUserTxResult.User.HashedPassword)
 }

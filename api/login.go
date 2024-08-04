@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
+	localization "github.com/mustafayilmazdev/musarchive/locales"
 	"github.com/mustafayilmazdev/musarchive/util"
 )
 
@@ -32,6 +33,7 @@ func newUserResponse(user db.User) UserResponse {
 		Username:          user.Username,
 		FullName:          user.FullName,
 		Email:             user.Email,
+		Role:              user.Role,
 		Avatar:            user.Avatar,
 		BirthDate:         user.BirthDate,
 		PasswordChangedAt: user.PasswordChangedAt,
@@ -40,6 +42,7 @@ func newUserResponse(user db.User) UserResponse {
 }
 
 func (server *Server) LoginUser(ctx *gin.Context) {
+	locale := ctx.Query(util.Locale)
 	var req loginUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		BuildResponse(ctx, BaseResponse{
@@ -80,6 +83,17 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 			Message: ResponseMessage{
 				Type:    ERROR,
 				Content: err.Error(),
+			},
+		})
+		return
+	}
+
+	if !user.IsEmailVerified {
+		BuildResponse(ctx, BaseResponse{
+			Code: http.StatusUnauthorized,
+			Message: ResponseMessage{
+				Type:    ERROR,
+				Content: server.lm.Translate(locale, localization.User_VerifyEmail),
 			},
 		})
 		return

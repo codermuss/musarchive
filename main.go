@@ -9,10 +9,13 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mustafayilmazdev/musarchive/api"
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
 	localization "github.com/mustafayilmazdev/musarchive/locales"
+	"github.com/mustafayilmazdev/musarchive/mail"
+	"github.com/mustafayilmazdev/musarchive/worker"
 
 	"golang.org/x/sync/errgroup"
 
@@ -45,7 +48,7 @@ func main() {
 	}
 
 	// Initialize the LocalizationManager singleton
-	if err := localization.Initialize(util.LocalizationPath + util.DefaultLocale + util.LocalizationType); err != nil {
+	if err := localization.Initialize(util.LocalizationPath); err != nil {
 		log.Fatal().Msg("Can not load localization")
 	}
 
@@ -61,7 +64,14 @@ func main() {
 	runDBMigration(config.MigrationUrl, config.DBSource)
 	store := db.NewStore(connPool)
 	waitGroup, ctx := errgroup.WithContext(ctx)
-	runGinServer(config, ctx, waitGroup, store)
+
+	redisOpt := asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+
+	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
+	go runTaskProcessor(config, ctx, waitGroup, redisOpt, store)
+	runGinServer(config, ctx, waitGroup, store, taskDistributor)
 
 	err = waitGroup.Wait()
 	if err != nil {
@@ -81,9 +91,28 @@ func runDBMigration(migrationUrl, dbSource string) {
 	log.Info().Msg(lm.Translate(util.DefaultLocale, localization.Success_Migrate))
 }
 
-func runGinServer(config util.Config, ctx context.Context, waitGroup *errgroup.Group, store db.Store) {
+func runTaskProcessor(config util.Config, ctx context.Context, waitGroup *errgroup.Group, redisOpt asynq.RedisClientOpt, store db.Store) {
+	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
+	taskProcessor := worker.NewRedisTaskProcessor(redisOpt, store, mailer)
+	log.Info().Msg("start task processor")
+	err := taskProcessor.Start()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to start task processor")
+	}
 
-	server, err := api.NewServer(config, store)
+	waitGroup.Go(func() error {
+		<-ctx.Done()
+		log.Info().Msg("graceful shutdown task processor")
+
+		taskProcessor.ShutDown()
+		log.Info().Msg("task processor is stopped")
+		return nil
+	})
+}
+
+func runGinServer(config util.Config, ctx context.Context, waitGroup *errgroup.Group, store db.Store, taskDistributor worker.TaskDistributor) {
+
+	server, err := api.NewServer(config, store, taskDistributor)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -79,11 +79,23 @@ func TestGetUser(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	randomUser := createRandomUser(t)
 	updateUser := UpdateUserParams{
-		ID:             randomUser.ID,
-		Username:       util.RandomUsername(),
-		HashedPassword: util.RandomString(10),
-		FullName:       util.RandomString(10),
-		Email:          util.RandomEmail(),
+		ID: randomUser.ID,
+		Username: pgtype.Text{
+			Valid:  true,
+			String: util.RandomUsername(),
+		},
+		HashedPassword: pgtype.Text{
+			Valid:  true,
+			String: util.RandomString(10),
+		},
+		FullName: pgtype.Text{
+			Valid:  true,
+			String: util.RandomString(10),
+		},
+		Email: pgtype.Text{
+			Valid:  true,
+			String: util.RandomEmail(),
+		},
 		Avatar: pgtype.Text{
 			Valid:  true,
 			String: util.RandomImage(),
@@ -99,10 +111,10 @@ func TestUpdateUser(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 	require.Equal(t, randomUser.ID, user.ID)
-	require.Equal(t, updateUser.Username, user.Username)
-	require.Equal(t, updateUser.FullName, user.FullName)
-	require.Equal(t, updateUser.Email, user.Email)
-	require.Equal(t, updateUser.HashedPassword, user.HashedPassword)
+	require.Equal(t, updateUser.Username.String, user.Username)
+	require.Equal(t, updateUser.FullName.String, user.FullName)
+	require.Equal(t, updateUser.Email.String, user.Email)
+	require.Equal(t, updateUser.HashedPassword.String, user.HashedPassword)
 	require.Equal(t, updateUser.Avatar, user.Avatar)
 }
 

@@ -23,7 +23,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, hashed_password, full_name, email, avatar,role, birth_date, password_changed_at, created_at 
+SELECT id, username, hashed_password, full_name, email, avatar, role, birth_date, is_email_verified, password_changed_at, created_at 
 FROM users 
 WHERE username = $1
 `
@@ -40,6 +40,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.Avatar,
 		&i.Role,
 		&i.BirthDate,
+		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 	)
@@ -49,7 +50,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 const insertUser = `-- name: InsertUser :one
 INSERT INTO users (username, hashed_password, full_name, email, avatar,role, birth_date, password_changed_at, created_at) 
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9) 
-RETURNING id, username, hashed_password, full_name, email, avatar, role, birth_date, password_changed_at, created_at
+RETURNING id, username, hashed_password, full_name, email, avatar, role, birth_date, is_email_verified, password_changed_at, created_at
 `
 
 type InsertUserParams struct {
@@ -86,6 +87,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 		&i.Avatar,
 		&i.Role,
 		&i.BirthDate,
+		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 	)
@@ -94,22 +96,33 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users 
-SET username = $1, hashed_password = $2, full_name = $3, email = $4, avatar = $5, role=$6, birth_date = $7, password_changed_at = $8, created_at = $9
-WHERE id = $10
-RETURNING id, username, hashed_password, full_name, email, avatar, role, birth_date, password_changed_at, created_at
+SET 
+    username = COALESCE($1, username), 
+    hashed_password = COALESCE($2, hashed_password), 
+    full_name = COALESCE($3, full_name), 
+    email = COALESCE($4, email), 
+    avatar = COALESCE($5, avatar), 
+    role = COALESCE($6, role), 
+    birth_date = COALESCE($7, birth_date), 
+    is_email_verified = COALESCE($8, is_email_verified), 
+    password_changed_at = COALESCE($9, password_changed_at), 
+    created_at = COALESCE($10, created_at)
+WHERE id = $11
+RETURNING id, username, hashed_password, full_name, email, avatar, role, birth_date, is_email_verified, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
-	Username          string      `json:"username"`
-	HashedPassword    string      `json:"hashed_password"`
-	FullName          string      `json:"full_name"`
-	Email             string      `json:"email"`
-	Avatar            pgtype.Text `json:"avatar"`
-	Role              string      `json:"role"`
-	BirthDate         pgtype.Date `json:"birth_date"`
-	PasswordChangedAt time.Time   `json:"password_changed_at"`
-	CreatedAt         time.Time   `json:"created_at"`
-	ID                int32       `json:"id"`
+	Username          pgtype.Text        `json:"username"`
+	HashedPassword    pgtype.Text        `json:"hashed_password"`
+	FullName          pgtype.Text        `json:"full_name"`
+	Email             pgtype.Text        `json:"email"`
+	Avatar            pgtype.Text        `json:"avatar"`
+	Role              pgtype.Text        `json:"role"`
+	BirthDate         pgtype.Date        `json:"birth_date"`
+	IsEmailVerified   pgtype.Bool        `json:"is_email_verified"`
+	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	ID                int32              `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -121,6 +134,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Avatar,
 		arg.Role,
 		arg.BirthDate,
+		arg.IsEmailVerified,
 		arg.PasswordChangedAt,
 		arg.CreatedAt,
 		arg.ID,
@@ -135,6 +149,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Avatar,
 		&i.Role,
 		&i.BirthDate,
+		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 	)

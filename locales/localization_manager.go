@@ -6,6 +6,7 @@ import (
 
 	"sync"
 
+	"github.com/mustafayilmazdev/musarchive/util"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
 )
@@ -20,12 +21,12 @@ var (
 	once     sync.Once
 	initErr  error
 
-	supportedLangs = []string{"en"}
+	supportedLangs = []string{"en", "tr"}
 	defaultLang    = "en"
 )
 
 // Initialize initializes the LocalizationManager singleton
-func Initialize(path string) error {
+func Initialize(assetPath string) error {
 	once.Do(func() {
 		bundle := i18n.NewBundle(language.English)
 		bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
@@ -36,7 +37,7 @@ func Initialize(path string) error {
 
 		// Load all supported languages at startup
 		for _, lang := range supportedLangs {
-			if err := instance.loadLanguageFiles(path, lang); err != nil {
+			if err := instance.loadLanguageFiles(assetPath + lang + util.LocalizationType); err != nil {
 				initErr = fmt.Errorf("failed to load language files for %s: %v", lang, err)
 				return
 			}
@@ -44,7 +45,7 @@ func Initialize(path string) error {
 		}
 
 		// Ensure the default language is loaded
-		if err := instance.loadLanguageFiles(path, defaultLang); err != nil {
+		if err := instance.loadLanguageFiles(assetPath + defaultLang + util.LocalizationType); err != nil {
 			initErr = fmt.Errorf("failed to load default language files: %v", err)
 			return
 		}
@@ -59,14 +60,17 @@ func GetInstance() *LocalizationManager {
 }
 
 // loadLanguageFiles loads the translation files for a given language
-func (lm *LocalizationManager) loadLanguageFiles(path, lang string) error {
+func (lm *LocalizationManager) loadLanguageFiles(path string) error {
 	_, err := lm.bundle.LoadMessageFile(path)
 	return err
 }
 
 // Translate retrieves the localized message for the given language and message ID
 func (lm *LocalizationManager) Translate(lang, messageID string, args ...interface{}) string {
-	localizer, _ := lm.localizers.Load(lang)
+	localizer, ok := lm.localizers.Load(lang)
+	if !ok {
+		localizer, _ = lm.localizers.Load(util.DefaultLocale)
+	}
 
 	if loc, ok := localizer.(*i18n.Localizer); ok {
 		params := make(map[string]interface{})
