@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -228,7 +227,6 @@ func (server *Server) GetFollowedPosts(ctx *gin.Context) {
 
 	}
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-	fmt.Println(authPayload.UserID)
 	arg := db.GetFollowedPostsParams{
 		FollowerID: int32(authPayload.UserID),
 		Limit:      int32(size),

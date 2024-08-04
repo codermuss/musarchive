@@ -45,5 +45,10 @@
     },
     "Task":{
       "FailedDistribute":"Failed to distribute task to send verify email: {{.arg0}}"
+    },
+    "Comment":{
+      "Added":"Your comment added successfully!",
+      "Deleted":"Your comment deleted successfully!",
+      "CantDeleteOthersComment":"You can not delete others comment!"
     }
 }

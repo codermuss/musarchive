@@ -62,6 +62,9 @@ func (server *Server) setupRouter() {
 		postRoutes.GET("/index", server.GetPosts)
 		postRoutes.GET("/followed", server.GetFollowedPosts)
 		postRoutes.POST("/create", server.CreatePost)
+		postRoutes.GET("/comment/index", server.GetPostComments)
+		postRoutes.POST("/comment/create", server.CreateComment)
+		postRoutes.DELETE("/comment/delete", server.DeletePostComment)
 	}
 	categoryRoutes := router.Group("/v1/categories").Use(authMiddleware(server.tokenMaker))
 	{

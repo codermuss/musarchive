@@ -9,6 +9,11 @@ FROM comments
 WHERE post_id = $1 
 ORDER BY created_at DESC;
 
+-- name: GetComment :one
+SELECT id, post_id, user_id, content, created_at 
+FROM comments 
+WHERE id = $1;
+
 -- name: DeleteComment :exec
 DELETE FROM comments 
 WHERE id = $1;
