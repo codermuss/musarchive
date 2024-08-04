@@ -21,7 +21,7 @@ func newTestServer(t *testing.T, store db.Store, taskDistributor worker.TaskDist
 	}
 
 	// Initialize the LocalizationManager singleton
-	if err := localization.Initialize("../" + util.LocalizationPath + util.DefaultLocale + util.LocalizationType); err != nil {
+	if err := localization.Initialize("../locales/assets/"); err != nil {
 
 		log.Fatal().Msg("Can not load localization")
 	}
