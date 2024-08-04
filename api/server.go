@@ -40,7 +40,6 @@ func (server *Server) setupRouter() {
 
 	router.Use(ZerologMiddleware())
 	router.Use(gin.Recovery())
-	router.LoadHTMLGlob("/Users/mustafayilmaz/Go/projects/musarchive/templates/*")
 
 	// Serve the API endpoints
 	api := router.Group("/v1")

@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/mustafayilmazdev/musarchive/db/sqlc"
@@ -34,22 +33,23 @@ func (server *Server) VerifyEmail(ctx *gin.Context) {
 	})
 
 	if err != nil {
-		data := gin.H{
-			"Title":        server.lm.Translate(req.Locale, localization.User_VerifyEmailErrorTitle),
-			"Timestamp":    time.Now().Format(time.RFC1123),
-			"Content":      server.lm.Translate(req.Locale, localization.Errors_AnErrorOccured),
-			"ErrorMessage": err,
-		}
-		ctx.HTML(http.StatusOK, "error_verify_email.html", data)
+		BuildResponse(ctx, BaseResponse{
+			Code: http.StatusInternalServerError,
+			Message: ResponseMessage{
+				Type:    ERROR,
+				Content: err.Error(),
+			},
+		})
+
 		return
 	}
 
-	data := gin.H{
-		"Title":          server.lm.Translate(req.Locale, localization.User_VerifyEmailSuccessTitle),
-		"Timestamp":      time.Now().Format(time.RFC1123),
-		"Content":        server.lm.Translate(req.Locale, localization.User_VerifyEmailSuccess),
-		"WelcomeMessage": server.lm.Translate(req.Locale, localization.User_VerifyEmailMessage),
-	}
-	ctx.HTML(http.StatusOK, "success_verify_email.html", data)
+	BuildResponse(ctx, BaseResponse{
+		Code: http.StatusOK,
+		Message: ResponseMessage{
+			Type:    SUCCESS,
+			Content: server.lm.Translate(req.Locale, localization.User_VerifyEmailMessage),
+		},
+	})
 
 }
