@@ -15,12 +15,24 @@ const (
 	authorizationHeaderKey  = "authorization"
 	authorizationTypeBearer = "bearer"
 	authorizationPayloadKey = "authorization_payload_key"
+	localeKey               = util.Locale
+	defaultLocale           = util.DefaultLocale // Define your default locale here
 )
 
 func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
+		// Get locale from the query parameter
 		locale := ctx.Query(util.Locale)
+
+		// Check if locale is empty and set to default if necessary
+		if locale == "" {
+			locale = defaultLocale
+		}
+
+		// Set the locale in the context
+		ctx.Set(localeKey, locale)
+
+		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 		if len(authorizationHeader) == 0 {
 			AbortResponse(ctx, BaseResponse{
 				Code: http.StatusUnauthorized,

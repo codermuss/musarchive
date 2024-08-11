@@ -50,5 +50,8 @@
       "Added":"Your comment added successfully!",
       "Deleted":"Your comment deleted successfully!",
       "CantDeleteOthersComment":"You can not delete others comment!"
+    },
+    "Tag":{
+      "Inserted":"{{.arg0}} tag created successfully!"
     }
 }

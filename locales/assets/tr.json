@@ -43,5 +43,8 @@
   },
   "Task": {
     "FailedDistribute": "Doğrulama e-postası gönderme görevini dağıtmak başarısız oldu: {{.arg0}}"
+  },
+  "Tag":{
+    "Inserted":"{{.arg0}} etiketi başarıyla oluşturuldu!"
   }
 }

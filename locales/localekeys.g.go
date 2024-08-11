@@ -24,6 +24,7 @@ const (
 	Pagination_sizeError = "Pagination.sizeError"
 	Post_InsertSuccess = "Post.InsertSuccess"
 	Success_Migrate = "Success.Migrate"
+	Tag_Inserted = "Tag.Inserted"
 	Task_FailedDistribute = "Task.FailedDistribute"
 	User_EmailContent = "User.EmailContent"
 	User_EmailTitle = "User.EmailTitle"

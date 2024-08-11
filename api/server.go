@@ -73,6 +73,7 @@ func (server *Server) setupRouter() {
 	tagRoutes := router.Group("/v1/tags").Use(authMiddleware(server.tokenMaker))
 	{
 		tagRoutes.GET("/index", server.GetTags)
+		tagRoutes.POST("/create", server.InsertTag)
 	}
 	profileRoutes := router.Group("/v1/profile").Use(authMiddleware(server.tokenMaker))
 	{
