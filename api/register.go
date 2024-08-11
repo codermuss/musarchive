@@ -77,7 +77,13 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		BirthDate:      req.BirthDate,
 	}
 	argAfterCreate := func(user db.User) error {
-		taskPayload := &worker.PayloadSendVerifyEmail{Username: user.Username, Locale: localeValue}
+		var locale string
+		if len(localeValue) < 2 {
+			locale = util.DefaultLocale
+		} else {
+			locale = localeValue
+		}
+		taskPayload := &worker.PayloadSendVerifyEmail{Username: user.Username, Locale: locale}
 		opts := []asynq.Option{
 			asynq.MaxRetry(10),
 			asynq.ProcessIn(10 * time.Second),
